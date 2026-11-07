@@ -1,2 +1,8 @@
 pa3_dados/
 .vscode/
+cache/
+__pycache__/
+*.pyc
+slides_notes.txt
+checkpoints/
+*.tmp
