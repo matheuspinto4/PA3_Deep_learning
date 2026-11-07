@@ -27,7 +27,7 @@ import numpy as np
 
 from pa3.config import BUDGETS, CEILING_F1, CLASSES, OUTPUTS_DIR
 from pa3.data import budget_labels, get_cache, is_night, split_labels
-from pa3.metrics import classification_metrics, confusion
+from pa3.metrics import classification_metrics, confusion, subset_metrics
 from pa3.plotting import COLORS, INK_MUTED, plot_confusion, plt
 from pa3.student import pseudo_label_path
 from pa3.teacher import (
@@ -69,9 +69,16 @@ def select_teacher(results: dict) -> tuple[str, str, str]:
     sel, zs_test = {}, {}
     for name in TEACHERS:
         print(f"\n== professor {name} ==", flush=True)
-        bundle = load_teacher(name)
-        model, _, tok = bundle
-        texts = {p: text_classifier(model, tok, p) for p in ("basic", "ensemble")}
+        # Carregamento preguiçoso: se textos e embeddings já estão em cache, o
+        # ViT nem é carregado e rodar o script de novo leva segundos.
+        text_path = OUT / f"_text_{name}.npy"
+        bundle = None
+        if text_path.exists():
+            texts = dict(zip(("basic", "ensemble"), np.load(text_path)))
+        else:
+            bundle = load_teacher(name)
+            model, _, tok = bundle
+            texts = {p: text_classifier(model, tok, p) for p in ("basic", "ensemble")}
         for view in VIEWS:
             _, emb = cached_embeddings(name, view, "train", ids5, model_bundle=bundle)
             for p, t in texts.items():
@@ -83,8 +90,8 @@ def select_teacher(results: dict) -> tuple[str, str, str]:
             m = classification_metrics(y_test, zero_shot_logits(emb_test, t).argmax(1))
             zs_test[f"{name}|{best_view}|{p}"] = {"f1_macro": m["f1_macro"], "accuracy": m["accuracy"]}
             print(f"  test_public {best_view:9s} {p:8s} F1 = {m['f1_macro']:.3f} acc = {m['accuracy']:.3f}", flush=True)
-        np.save(OUT / f"_text_{name}.npy", np.stack([texts["basic"], texts["ensemble"]]))
-        del model, bundle
+        np.save(text_path, np.stack([texts["basic"], texts["ensemble"]]))
+        del bundle
 
     best = max(sel, key=sel.get)
     results["selection_105"] = sel
@@ -120,11 +127,12 @@ def plot_selection(results: dict, path: Path) -> None:
                        label="nomes das classes (basic)" if p == "basic" else "ensemble de prompts")
         ax2.bar_label(bars, fmt="%.3f", fontsize=9, padding=2)
     floor = _floor_f1()
+    # rótulos das linhas de referência à esquerda, onde as barras são baixas
     if floor is not None:
         ax2.axhline(floor, color=COLORS["floor"], ls="--", lw=1.5)
-        ax2.text(len(names) - 0.5, floor + 0.01, f"piso (b) = {floor:.3f}", color=COLORS["floor"], ha="right", fontsize=9)
+        ax2.text(-0.45, floor + 0.012, f"piso (b) = {floor:.3f}", color=COLORS["floor"], ha="left", fontsize=9)
     ax2.axhline(CEILING_F1, color=COLORS["ceiling"], ls="--", lw=1.5)
-    ax2.text(len(names) - 0.5, CEILING_F1 + 0.01, f"teto = {CEILING_F1}", color=COLORS["ceiling"], ha="right", fontsize=9)
+    ax2.text(-0.45, CEILING_F1 + 0.012, f"teto = {CEILING_F1}", color=COLORS["ceiling"], ha="left", fontsize=9)
     ax2.set_xticks(range(len(names)), [f"{n}\n({next(k for k in zs if k.startswith(n + '|')).split('|')[1]})" for n in names])
     ax2.set_ylim(0, 1)
     ax2.set_ylabel("F1 macro")
@@ -187,10 +195,16 @@ def noise_analysis(name: str, y_test: np.ndarray, probs: np.ndarray, night: np.n
     cm = confusion(y_test, pred)
     m = classification_metrics(y_test, pred)
     plot_confusion(cm, f"{title}\nF1 macro {m['f1_macro']:.3f} · acurácia {m['accuracy']:.3f}", OUT / f"03_matriz_ruido_{tag}.png")
-    by_light = {}
-    for lbl, mask in (("dia", ~night), ("noite", night)):
-        mm = classification_metrics(y_test[mask], pred[mask])
-        by_light[lbl] = {"n": int(mask.sum()), "accuracy": mm["accuracy"], "f1_macro": mm["f1_macro"]}
+    by_light = {lbl: subset_metrics(y_test[mask], pred[mask]) for lbl, mask in (("dia", ~night), ("noite", night))}
+    # Dia e noite têm espécies diferentes (gambá só à noite, esquilo só de dia):
+    # para separar "noite é difícil" de "as espécies noturnas são difíceis",
+    # compara a mesma classe nos dois regimes (classes com >=5 imagens em cada).
+    within = {}
+    for c in range(len(CLASSES)):
+        d, n = (y_test == c) & ~night, (y_test == c) & night
+        if d.sum() >= 5 and n.sum() >= 5:
+            within[CLASSES[c]] = {"dia": float((pred[d] == c).mean()), "n_dia": int(d.sum()),
+                                  "noite": float((pred[n] == c).mean()), "n_noite": int(n.sum())}
     off = cm.copy()
     np.fill_diagonal(off, 0)
     pairs = [
@@ -206,52 +220,54 @@ def noise_analysis(name: str, y_test: np.ndarray, probs: np.ndarray, night: np.n
         "predicted_counts": cm.sum(0).tolist(),
         "true_counts": cm.sum(1).tolist(),
         "by_light": by_light,
+        "by_light_within_class_recall": within,
         "top_confusions": pairs,
         "confusion_matrix": cm.tolist(),
     }
 
 
-def plot_light(results: dict, path: Path) -> None:
-    tags = [("teacher_zs", "professor zero-shot"), ("teacher_improved_b5", "professor melhorado (5/classe)")]
-    floor_light = _floor_by_light()
-    fig, ax = plt.subplots(figsize=(9, 4.8))
-    groups = ["dia", "noite"]
-    series = [(lbl, [results[t]["by_light"][g]["f1_macro"] for g in groups], COLORS["teacher"], a) for (t, lbl), a in zip(tags, (0.55, 1.0))]
-    if floor_light:
-        series.insert(0, ("piso (b)", [floor_light[g]["f1_macro"] for g in groups], COLORS["floor"], 1.0))
-    w = 0.8 / len(series)
-    for k, (lbl, vals, color, alpha) in enumerate(series):
-        bars = ax.bar(np.arange(2) + (k - (len(series) - 1) / 2) * w, vals, w * 0.92, color=color, alpha=alpha, label=lbl)
-        ax.bar_label(bars, fmt="%.3f", fontsize=9, padding=2)
+def plot_light(results: dict, y_test: np.ndarray, night: np.ndarray, path: Path) -> None:
+    """Três painéis: acurácia e F1 (classes presentes) por regime, e a mesma
+    classe de dia vs. de noite -- o controle para a mistura de espécies."""
+    floor_pred = np.load(OUTPUTS_DIR / "floor_runs" / "resnet18_b5_s0_test_logits.npy").argmax(1)
+    floor_light = {g: subset_metrics(y_test[m], floor_pred[m]) for g, m in (("dia", ~night), ("noite", night))}
+    series = [
+        ("piso (b)", floor_light, COLORS["floor"], 1.0),
+        ("professor zero-shot", results["teacher_zs"]["by_light"], COLORS["teacher"], 0.55),
+        ("professor melhorado (5/classe)", results["teacher_improved_b5"]["by_light"], COLORS["teacher"], 1.0),
+    ]
+    fig, axes = plt.subplots(1, 3, figsize=(20, 5.6), gridspec_kw={"width_ratios": [1, 1, 1.3], "wspace": 0.45})
     n = results["teacher_zs"]["by_light"]
-    ax.set_xticks(range(2), [f"dia (n={n['dia']['n']})", f"noite / IR (n={n['noite']['n']})"])
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("F1 macro no test_public")
-    ax.set_title("O professor erra mais à noite?")
-    ax.legend(loc="upper right", fontsize=9)
-    ax.grid(axis="x", visible=False)
+    w = 0.8 / len(series)
+    for ax, metric, name in zip(axes[:2], ("accuracy", "f1_macro"), ("acurácia", "F1 macro (classes presentes)")):
+        for k, (lbl, light, color, alpha) in enumerate(series):
+            vals = [light[g][metric] for g in ("dia", "noite")]
+            bars = ax.bar(np.arange(2) + (k - (len(series) - 1) / 2) * w, vals, w * 0.92, color=color, alpha=alpha, label=lbl)
+            ax.bar_label(bars, fmt="%.2f", fontsize=8.5, padding=2)
+        ax.set_xticks(range(2), [f"dia\n(n={n['dia']['n']}, {n['dia']['n_classes']} classes)",
+                                 f"noite / IR\n(n={n['noite']['n']}, {n['noite']['n_classes']} classes)"])
+        ax.set_ylim(0, 1)
+        ax.set_title(name[0].upper() + name[1:])
+        ax.grid(axis="x", visible=False)
+    axes[0].legend(loc="upper left", fontsize=8.5)
+
+    within = results["teacher_zs"]["by_light_within_class_recall"]
+    names = sorted(within, key=lambda c: within[c]["noite"] - within[c]["dia"])
+    yy = np.arange(len(names))
+    ax = axes[2]
+    for i, c in enumerate(names):
+        ax.plot([within[c]["dia"], within[c]["noite"]], [i, i], color=INK_MUTED, lw=1.2, zorder=1)
+    ax.scatter([within[c]["dia"] for c in names], yy, s=70, color=COLORS["floor"], zorder=2, label="dia", edgecolor="white", linewidth=1.5)
+    ax.scatter([within[c]["noite"] for c in names], yy, s=70, color=COLORS["scratch"], zorder=2, label="noite / IR", edgecolor="white", linewidth=1.5)
+    ax.set_yticks(yy, [f"{c} ({within[c]['n_dia']}/{within[c]['n_noite']})" for c in names], fontsize=9)
+    ax.set_xlim(-0.03, 1.03)
+    ax.set_xlabel("recall do professor zero-shot")
+    ax.set_title("Mesma classe, dia vs. noite (n dia/noite)")
+    ax.legend(loc="lower right", fontsize=9)
+    ax.grid(axis="y", visible=False)
+    fig.suptitle("O professor erra mais à noite?", fontweight="bold")
     fig.savefig(path)
     plt.close(fig)
-
-
-def _floor_by_light():
-    p = OUTPUTS_DIR / "part0" / "results.json"
-    if not p.exists():
-        return None
-    import torch
-
-    from pa3.data import eval_dataset
-    from pa3.engine import predict_logits
-    from pa3.floor import CKPT_DIR
-    from pa3.models import build_resnet18
-
-    m = build_resnet18(pretrained=False)
-    m.load_state_dict(torch.load(CKPT_DIR / "floor" / "resnet18_b5_s0.pt"))
-    ds = eval_dataset("test_public")
-    pred = predict_logits(m, ds).argmax(1)
-    y = np.asarray(ds.labels)
-    night = is_night(ds.images)
-    return {g: {"f1_macro": classification_metrics(y[mask], pred[mask])["f1_macro"]} for g, mask in (("dia", ~night), ("noite", night))}
 
 
 def plot_bias(results: dict, train_counts: dict, path: Path) -> None:
@@ -322,7 +338,7 @@ def main():
     results["teacher"], results["view"], results["prompt"] = name, view, prompt
 
     print(f"\n== embeddings completos: {name} / {view} ==", flush=True)
-    bundle = load_teacher(name)
+    bundle = None  # load_teacher só é chamado se faltar algum embedding no cache
     train_ids, emb_train = cached_embeddings(name, view, "train", model_bundle=bundle)
     test_all_ids, emb_test_all = cached_embeddings(name, view, "test_public", model_bundle=bundle)
     text = np.load(OUT / f"_text_{name}.npy")[0 if prompt == "basic" else 1]
@@ -360,7 +376,7 @@ def main():
             np.save(OUT / "teacher_test_probs_zs.npy", zs_test)
             np.save(OUT / "teacher_test_probs_improved_b5.npy", imp_test)
     results["train_pseudo_counts"] = train_counts
-    plot_light(results, OUT / "04_professor_noite_vs_dia.png")
+    plot_light(results, y_test, night, OUT / "04_professor_noite_vs_dia.png")
     plot_bias(results, train_counts, OUT / "05_vies_distribuicao.png")
     (OUT / "teacher_results.json").write_text(json.dumps(results, indent=2))
 

@@ -1,0 +1,42 @@
+
+== professor clip_b32 ==
+  105 rótulos  center    basic    F1 = 0.218
+  105 rótulos  center    ensemble F1 = 0.228
+  105 rótulos  letterbox basic    F1 = 0.178
+  105 rótulos  letterbox ensemble F1 = 0.166
+  test_public center    basic    F1 = 0.223 acc = 0.269
+  test_public center    ensemble F1 = 0.229 acc = 0.259
+
+== professor bioclip ==
+  105 rótulos  center    basic    F1 = 0.231
+  105 rótulos  center    ensemble F1 = 0.356
+  105 rótulos  letterbox basic    F1 = 0.160
+  105 rótulos  letterbox ensemble F1 = 0.261
+  test_public center    basic    F1 = 0.216 acc = 0.259
+  test_public center    ensemble F1 = 0.350 acc = 0.363
+
+== professor bioclip2 ==
+  105 rótulos  center    basic    F1 = 0.343
+  105 rótulos  center    ensemble F1 = 0.601
+  105 rótulos  letterbox basic    F1 = 0.358
+  105 rótulos  letterbox ensemble F1 = 0.581
+  test_public center    basic    F1 = 0.401 acc = 0.429
+  test_public center    ensemble F1 = 0.649 acc = 0.628
+
+professor escolhido (F1 nos 105 rótulos): bioclip2|center|ensemble
+
+== embeddings completos: bioclip2 / center ==
+orçamento 1: beta=1.0 T_zs=1.19 T_imp=1.19 | professor melhorado test F1 0.671 acc 0.676
+orçamento 5: beta=0.25 T_zs=1.41 T_imp=1.30 | professor melhorado test F1 0.682 acc 0.681
+orçamento 20: beta=1.0 T_zs=1.41 T_imp=1.30 | professor melhorado test F1 0.738 acc 0.740
+
+professor zero-shot test_public: F1 0.649 acc 0.628 | dia/noite: {'dia': {'n': 420, 'n_classes': 16, 'accuracy': 0.5357142857142857, 'f1_macro': 0.5625020331773247}, 'noite': {'n': 391, 'n_classes': 15, 'accuracy': 0.7263427109974424, 'f1_macro': 0.721741967854641}}
+pares mais confundidos:
+                     dog -> woodchuck               24 (36% da classe)
+        eastern_chipmunk -> woodchuck               15 (48% da classe)
+   eastern_gray_squirrel -> woodchuck               15 (44% da classe)
+        virginia_opossum -> woodchuck               10 (18% da classe)
+           american_crow -> eastern_fox_squirrel     9 (14% da classe)
+     american_black_bear -> woodchuck                8 (10% da classe)
+                 chicken -> woodchuck                8 (13% da classe)
+      eastern_cottontail -> virginia_opossum         8 (31% da classe)

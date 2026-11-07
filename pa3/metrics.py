@@ -21,5 +21,20 @@ def classification_metrics(y_true, y_pred) -> dict:
     }
 
 
+def subset_metrics(y_true, y_pred) -> dict:
+    """Métricas num SUBCONJUNTO (ex.: só fotos noturnas). Aqui o F1 macro é
+    feito só sobre as classes presentes no subconjunto: com labels=todas, uma
+    classe que nem aparece (não há gambá de dia) entraria como F1=0 e
+    derrubaria a média sem dizer nada sobre o modelo."""
+    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    present = np.unique(y_true)
+    return {
+        "n": int(len(y_true)),
+        "n_classes": int(len(present)),
+        "accuracy": float((y_true == y_pred).mean()),
+        "f1_macro": float(f1_score(y_true, y_pred, labels=present, average="macro", zero_division=0)),
+    }
+
+
 def confusion(y_true, y_pred) -> np.ndarray:
     return confusion_matrix(y_true, y_pred, labels=ALL_LABELS)
