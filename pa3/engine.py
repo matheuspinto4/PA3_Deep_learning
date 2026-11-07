@@ -7,7 +7,6 @@ e cada amostra pode ter um peso (ex.: confiança do pseudo-rótulo).
 
 from __future__ import annotations
 
-import copy
 import math
 import random
 import time
@@ -18,6 +17,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 
+from pa3.config import DEVICE, NUM_WORKERS
 from pa3.metrics import classification_metrics
 
 
@@ -34,10 +34,21 @@ def soft_cross_entropy(logits: torch.Tensor, target: torch.Tensor, label_smoothi
     return -(target * F.log_softmax(logits, dim=1)).sum(dim=1)
 
 
+def _loader(ds: Dataset, batch_size: int, shuffle: bool, device: torch.device) -> DataLoader:
+    workers = NUM_WORKERS if device.type == "cuda" else 0
+    return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=workers,
+                      pin_memory=device.type == "cuda", persistent_workers=workers > 0)
+
+
 @torch.no_grad()
 def predict_logits(model: nn.Module, ds: Dataset, batch_size: int = 64) -> np.ndarray:
+    """Logits no device em que o modelo já está (CPU no predict.py)."""
     model.eval()
-    out = [model(x) for x, _ in DataLoader(ds, batch_size=batch_size, shuffle=False)]
+    dev = next(model.parameters()).device
+    out = []
+    for x, _ in _loader(ds, batch_size * (4 if dev.type == "cuda" else 1), False, dev):
+        with torch.autocast("cuda", dtype=torch.float16, enabled=dev.type == "cuda"):
+            out.append(model(x.to(dev, non_blocking=True)).float().cpu())
     return torch.cat(out).numpy()
 
 
@@ -88,22 +99,30 @@ def fit(
     otimizador, scheduler, RNG, histórico e melhor estado; se o arquivo já
     existe, o treino continua da época seguinte em vez de recomeçar. O arquivo
     é apagado quando o treino termina.
+
+    Em GPU usa precisão mista (fp16 + GradScaler); em CPU, fp32 puro.
     """
+    model.to(DEVICE)
+    use_amp = DEVICE.type == "cuda"
+    scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     opt = torch.optim.AdamW(param_groups, weight_decay=weight_decay)
     steps_per_epoch = math.ceil(len(train_ds) / batch_size)
     sched = torch.optim.lr_scheduler.LambdaLR(
         opt, _cosine_with_warmup(epochs * steps_per_epoch, warmup_epochs * steps_per_epoch)
     )
     weights = torch.ones(len(train_ds)) if sample_weights is None else torch.as_tensor(sample_weights, dtype=torch.float32)
-    loader = DataLoader(_Indexed(train_ds), batch_size=batch_size, shuffle=True, drop_last=False)
+    loader = _loader(_Indexed(train_ds), batch_size, True, DEVICE)
 
     history, best = [], {"f1": -1.0, "loss": float("inf"), "epoch": -1, "state": None}
     start = 1
     if checkpoint_path is not None and checkpoint_path.exists():
-        ck = torch.load(checkpoint_path, weights_only=False)
+        ck = torch.load(checkpoint_path, weights_only=False, map_location=DEVICE)
         model.load_state_dict(ck["model"])
         opt.load_state_dict(ck["opt"])
         sched.load_state_dict(ck["sched"])
+        if "scaler" in ck:
+            scaler.load_state_dict(ck["scaler"])
+        ck["torch_rng"] = ck["torch_rng"].cpu()
         torch.set_rng_state(ck["torch_rng"])
         np.random.set_state(ck["np_rng"])
         random.setstate(ck["py_rng"])
@@ -116,11 +135,14 @@ def fit(
         model.train()
         tot_loss, n = 0.0, 0
         for x, y, idx in loader:
-            w = weights[idx]
-            loss = (soft_cross_entropy(model(x), y, label_smoothing) * w).sum() / w.sum()
+            x, y, w = x.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True), weights[idx].to(DEVICE)
+            with torch.autocast("cuda", dtype=torch.float16, enabled=use_amp):
+                logits = model(x)
+            loss = (soft_cross_entropy(logits.float(), y, label_smoothing) * w).sum() / w.sum()
             opt.zero_grad()
-            loss.backward()
-            opt.step()
+            scaler.scale(loss).backward()
+            scaler.step(opt)
+            scaler.update()
             sched.step()
             tot_loss += loss.item() * len(x)
             n += len(x)
@@ -134,7 +156,9 @@ def fit(
         history.append(row)
 
         if val["f1_macro"] > best["f1"] or (val["f1_macro"] == best["f1"] and val["loss"] < best["loss"]):
-            best = {"f1": val["f1_macro"], "loss": val["loss"], "epoch": epoch, "state": copy.deepcopy(model.state_dict())}
+            # melhor estado guardado em CPU: não ocupa a GPU e já serve ao predict.py
+            best = {"f1": val["f1_macro"], "loss": val["loss"], "epoch": epoch,
+                    "state": {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}}
         if verbose:
             extra = f" | train F1 {row['train_f1']:.3f}" if "train_f1" in row else ""
             print(
@@ -146,7 +170,7 @@ def fit(
             checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
             tmp = checkpoint_path.with_suffix(".tmp")
             torch.save(
-                {"model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
+                {"model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(), "scaler": scaler.state_dict(),
                  "torch_rng": torch.get_rng_state(), "np_rng": np.random.get_state(), "py_rng": random.getstate(),
                  "history": history, "best": best, "epoch": epoch},
                 tmp,

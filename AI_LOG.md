@@ -67,4 +67,57 @@ ajuste quando um resultado não fazia sentido ou não entendíamos uma escolha.
   protótipo misto chega a 96% no leave-one-out.
 - **Tratamento do ruído como ablação.** Três alunos que diferem em uma coisa
   por vez: duro com zero-shot (sem tratamento), duro com professor melhorado,
-  e suave com professor melhorado. A escolha é pelo val.
+  e suave com professor melhorado. A escolha é pelo val. (Depois ampliada
+  com o filtro por confiança; ver "Mudança para o Colab".)
+
+### O que aconteceu ao rodar o professor
+
+- **O resultado mudou a história.** Esperávamos que um foundation model
+  zero-shot ficasse perto do piso. CLIP e BioCLIP ficaram abaixo (0,23 e
+  0,35), mas o BioCLIP 2 fez 0,649 sem nenhum rótulo. A escolha pelos 105
+  rótulos do train produziu o mesmo ranking do teste, o que nos deixou
+  confiantes de que a seleção sem val funcionou.
+- **Hipótese refutada: letterbox.** Apostávamos que mostrar a foto inteira ao
+  ViT (em vez do center crop) ajudaria com animais na borda. Piorou em todos
+  os modelos. Mantivemos o teste no resultado porque é uma hipótese
+  testada e descartada.
+- **Não escolhemos β olhando o teste.** Uma varredura de diagnóstico mostrou
+  que β=1 daria 0,718 no test_public, contra 0,682 do β=0,25 escolhido por
+  leave-one-out. Decidimos manter o β do LOO: trocar seria selecionar no
+  test_public, que é exatamente o que o enunciado proíbe.
+- **Bug de métrica que pegamos ao olhar a figura.** A primeira figura de
+  dia/noite mostrava F1 ~0,3–0,5 para tudo, abaixo do F1 geral, o que não
+  fazia sentido. A causa: o F1 macro com `labels=todas as 21 classes` num
+  subconjunto conta como zero as classes que nem aparecem nele (não há gambá
+  de dia). Criamos `subset_metrics` (F1 só sobre as classes presentes,
+  mais a acurácia) e acrescentamos a comparação **dentro da mesma classe**,
+  porque dia e noite têm espécies diferentes. A conclusão final ("o
+  professor erra mais de dia") só foi aceita depois desse controle.
+- **Log "travado".** Durante ~1h o log do professor ficou vazio. Conferimos
+  pela CPU e pelos arquivos de cache que ele estava rodando. A causa era um
+  `grep` sem `--line-buffered` no encadeamento, que segura a saída em blocos.
+
+### Mudança para o Colab
+
+- O primeiro aluno levou ~10 min por época em CPU (com a CPU já quente),
+  então os 3 alunos levariam ~4 h e o projeto inteiro ~11 h de treino, sem
+  margem para repetir nada. Decidimos treinar no Colab (T4).
+- Para isso: suporte a GPU com precisão mista no laço de treino (o mesmo
+  código roda nos dois), pseudo-rótulos versionados no git (o Colab não
+  precisa rodar o BioCLIP 2), checkpoints e resultados gravados no Drive a
+  cada época, e um notebook (`colab/run_pa3.ipynb`) que só chama os scripts.
+- Com GPU sobrando, acrescentamos a família de **filtro por confiança**
+  (τ = 0,3 / 0,5 / 0,7, com τ escolhido no val) às variantes do aluno, e
+  subimos as épocas do aluno de 8 para 12.
+- **Testamos tudo localmente com dados falsos antes de mandar** (scripts da
+  Parte 1 e da Parte 2 de ponta a ponta). Isso pegou um `✓` que o console do
+  Windows não imprime, e um caso em que o piso da Parte 0 seria retreinado no
+  Colab (o checkpoint não vai para o git) e mudaria o número já reportado.
+  Agora uma rodada é recarregada só pelo json + logits versionados.
+- **MegaDetector para medir o tamanho dos animais.** O enunciado pede para
+  avaliar o professor em "animais pequenos", mas o pacote não traz caixas. O
+  MegaDetector é permitido na Trilha C e aqui entra só como instrumento de
+  medida (train e test_public, nunca val). No Windows o OpenCV que o
+  `ultralytics` usa não carrega (falta uma DLL do sistema), então ele roda no
+  Colab. Para não depender do pacote PytorchWildlife, que traz muitas
+  dependências, pegamos a URL oficial dos pesos lendo o código-fonte dele.

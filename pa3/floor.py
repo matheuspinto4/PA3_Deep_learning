@@ -31,11 +31,15 @@ def train_floor(arch: str, budget: int = 5, seed: int = 0, verbose: bool = True)
     """Treina (ou, se a rodada já existe em disco, só recarrega) um piso."""
     tag = f"{arch}_b{budget}_s{seed}"
     ckpt, res_path, logits_path = CKPT_DIR / "floor" / f"{tag}.pt", RUNS_DIR / f"{tag}.json", RUNS_DIR / f"{tag}_test_logits.npy"
-    if ckpt.exists() and res_path.exists() and logits_path.exists():
+    # Basta o json + logits (versionados): no Colab o checkpoint não existe, e
+    # retreinar mudaria o número da Parte 0 que já foi reportado.
+    if res_path.exists() and logits_path.exists():
         if verbose:
             print(f"[{tag}] já treinado, recarregando de {res_path.name}", flush=True)
-        model = build_model(arch, pretrained=False)
-        model.load_state_dict(torch.load(ckpt))
+        model = None
+        if ckpt.exists():
+            model = build_model(arch, pretrained=False)
+            model.load_state_dict(torch.load(ckpt))
         return {"model": model, "result": json.loads(res_path.read_text()), "test_logits": np.load(logits_path),
                 "test_labels": np.asarray(eval_dataset("test_public").labels)}
 

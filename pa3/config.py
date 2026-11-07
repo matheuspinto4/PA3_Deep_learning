@@ -3,7 +3,18 @@
 from __future__ import annotations
 
 import csv
+import os
+import sys
 from pathlib import Path
+
+import torch
+
+# Treino roda em GPU quando há (Colab) e em CPU caso contrário. O modelo
+# entregue (predict.py) é sempre avaliado em CPU, como o enunciado exige.
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# No Windows os workers do DataLoader custam mais do que ajudam (spawn);
+# no Colab (Linux, fork) os workers fazem a aumentação em paralelo à GPU.
+NUM_WORKERS = 0 if sys.platform == "win32" else min(4, os.cpu_count() or 1)
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "pa3_dados" / "pa3_dados"

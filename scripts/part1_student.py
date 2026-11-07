@@ -1,14 +1,16 @@
 """Parte 1, Trilha C — o aluno (ResNet-18) treinado nos pseudo-rótulos.
 
-Treina as 3 variantes de pseudo-rótulo (ver pa3/student.py) no orçamento de 5
+Treina as 6 variantes de pseudo-rótulo (ver pa3/student.py) no orçamento de 5
 por classe, seed 0, escolhe a melhor PELO VAL, e compara com o professor e com
 o piso: em quais classes o aluno supera o professor?
 
 Retomável: variantes já treinadas (json em outputs/part1/students/) são lidas
-em vez de retreinadas. Pressupõe `part0_floor.py` e `part1_teacher.py` já rodados.
+em vez de retreinadas, e uma variante interrompida continua da última época.
+Pressupõe os resultados de `part0_floor.py` e `part1_teacher.py` em outputs/
+(versionados no git, então roda direto num clone, ex.: no Colab).
 
 Saídas em outputs/part1/:
-  07_alunos_variantes.png         F1 val / test das 3 variantes + referências
+  07_alunos_variantes.png          F1 val / test das 6 variantes + referências
   08_aluno_vs_professor_classe.png ganho por classe do aluno sobre o professor
   09_noite_vs_dia_todos.png        piso, professor e aluno, dia vs. noite
   10_matriz_confusao_aluno.png     matriz de confusão do aluno escolhido
@@ -28,16 +30,19 @@ import numpy as np
 
 from pa3.config import CEILING_F1, CLASSES, OUTPUTS_DIR
 from pa3.data import eval_dataset, is_night
-from pa3.metrics import classification_metrics, confusion
+from pa3.metrics import confusion, subset_metrics
 from pa3.plotting import COLORS, INK_MUTED, plot_confusion, plt
 from pa3.student import VARIANTS, train_student
 
 OUT = OUTPUTS_DIR / "part1"
 STUDENTS = OUT / "students"
 LABELS = {
-    "hard_zs": "duro · zero-shot\n(sem tratamento)",
-    "hard_improved": "duro · professor\nmelhorado",
-    "soft_improved": "suave · professor\nmelhorado",
+    "hard_zs": "duro\nzero-shot\n(sem tratamento)",
+    "hard_improved": "duro\nprof. melhorado",
+    "soft_improved": "suave\nprof. melhorado",
+    "soft_improved_tau30": "suave + filtro\nτ=0,3 (87%)",
+    "soft_improved_tau50": "suave + filtro\nτ=0,5 (69%)",
+    "soft_improved_tau70": "suave + filtro\nτ=0,7 (58%)",
 }
 
 
@@ -50,7 +55,13 @@ def get_student(variant: str) -> dict:
 
 
 def by_light(y, pred, night):
-    return {g: classification_metrics(y[m], pred[m])["f1_macro"] for g, m in (("dia", ~night), ("noite", night))}
+    return {g: subset_metrics(y[m], pred[m]) for g, m in (("dia", ~night), ("noite", night))}
+
+
+def floor_pred():
+    """Previsões do piso (b) no test_public, a partir dos logits versionados em
+    outputs/ (não precisa do checkpoint, que fica fora do git)."""
+    return np.load(OUTPUTS_DIR / "floor_runs" / "resnet18_b5_s0_test_logits.npy").argmax(1)
 
 
 def main():
@@ -62,27 +73,27 @@ def main():
     floor = json.loads((OUTPUTS_DIR / "part0" / "results.json").read_text())["resnet18"]
     t_zs, t_imp = teacher["teacher_zs"], teacher["teacher_improved_b5"]
 
-    # --- 07: as três variantes -------------------------------------------------
-    fig, ax = plt.subplots(figsize=(11, 5.2))
+    # --- 07: as variantes ------------------------------------------------------
+    fig, ax = plt.subplots(figsize=(15, 5.6))
     xs = np.arange(len(VARIANTS))
     for k, (key, lbl, alpha) in enumerate((("best_val_f1", "F1 val (seleção)", 0.5), ("test_f1_macro", "F1 test_public", 1.0))):
         vals = [students[v][key] for v in VARIANTS]
         bars = ax.bar(xs + (k - 0.5) * 0.36, vals, 0.34, color=COLORS["student"], alpha=alpha, label=lbl)
-        ax.bar_label(bars, fmt="%.3f", fontsize=9, padding=2)
+        ax.bar_label(bars, fmt="%.3f", fontsize=8, padding=2)
     refs = [
-        (floor["test_f1_macro"], f"piso (b) {floor['test_f1_macro']:.3f}", COLORS["floor"]),
-        (t_zs["f1_macro"], f"professor zero-shot {t_zs['f1_macro']:.3f}", COLORS["teacher"]),
-        (t_imp["f1_macro"], f"professor melhorado {t_imp['f1_macro']:.3f}", COLORS["teacher"]),
-        (CEILING_F1, f"teto {CEILING_F1}", COLORS["ceiling"]),
+        (floor["test_f1_macro"], f"piso (b) {floor['test_f1_macro']:.3f}", COLORS["floor"], "--"),
+        (t_zs["f1_macro"], f"professor zero-shot {t_zs['f1_macro']:.3f}", COLORS["teacher"], "--"),
+        (t_imp["f1_macro"], f"professor melhorado {t_imp['f1_macro']:.3f}", COLORS["teacher"], ":"),
+        (CEILING_F1, f"teto {CEILING_F1}", COLORS["ceiling"], "--"),
     ]
-    for y, lbl, c in refs:
-        ax.axhline(y, color=c, ls="--" if "melhorado" not in lbl else ":", lw=1.3)
+    for y, lbl, c, ls in refs:
+        ax.axhline(y, color=c, ls=ls, lw=1.3)
         ax.text(len(VARIANTS) - 0.45, y, " " + lbl, color=c, fontsize=8.5, va="center")
-    ax.set_xticks(xs, [LABELS[v] + ("  ✓" if v == chosen else "") for v in VARIANTS])
-    ax.set_xlim(-0.6, len(VARIANTS) + 0.6)
+    ax.set_xticks(xs, [LABELS[v] + ("\n✓ escolhido no val" if v == chosen else "") for v in VARIANTS], fontsize=9)
+    ax.set_xlim(-0.6, len(VARIANTS) + 0.9)
     ax.set_ylim(0, 1)
     ax.set_ylabel("F1 macro")
-    ax.set_title("Aluno ResNet-18 — 3 formas de usar os pseudo-rótulos (5 rótulos/classe)")
+    ax.set_title("Aluno ResNet-18 — formas de usar os pseudo-rótulos (5 rótulos/classe)")
     ax.legend(loc="upper left")
     ax.grid(axis="x", visible=False)
     fig.savefig(OUT / "07_alunos_variantes.png")
@@ -119,25 +130,23 @@ def main():
     y_test, night = np.asarray(ds.labels), is_night(ds.images)
     pred_s = np.load(STUDENTS / f"{chosen}_b5_s0_test_logits.npy").argmax(1)
     light = {
-        "piso (b)": by_light(y_test, _floor_pred(ds), night),
-        "professor": teacher_used["by_light"]["dia"]["f1_macro"], "_t_noite": teacher_used["by_light"]["noite"]["f1_macro"],
+        "piso (b)": by_light(y_test, floor_pred(), night),
+        "professor": teacher_used["by_light"],
         "aluno": by_light(y_test, pred_s, night),
     }
-    series = [
-        ("piso (b)", [light["piso (b)"]["dia"], light["piso (b)"]["noite"]], COLORS["floor"]),
-        ("professor", [light["professor"], light["_t_noite"]], COLORS["teacher"]),
-        ("aluno", [light["aluno"]["dia"], light["aluno"]["noite"]], COLORS["student"]),
-    ]
-    fig, ax = plt.subplots(figsize=(9, 4.8))
-    for k, (lbl, vals, c) in enumerate(series):
-        bars = ax.bar(np.arange(2) + (k - 1) * 0.27, vals, 0.25, color=c, label=lbl)
-        ax.bar_label(bars, fmt="%.3f", fontsize=9, padding=2)
-    ax.set_xticks(range(2), [f"dia (n={int((~night).sum())})", f"noite / IR (n={int(night.sum())})"])
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("F1 macro no test_public")
-    ax.set_title("Dia vs. noite: piso, professor e aluno")
-    ax.legend(loc="upper right")
-    ax.grid(axis="x", visible=False)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 4.8))
+    for ax, metric, name in zip(axes, ("accuracy", "f1_macro"), ("acurácia", "F1 macro (classes presentes)")):
+        for k, (lbl, c) in enumerate((("piso (b)", COLORS["floor"]), ("professor", COLORS["teacher"]), ("aluno", COLORS["student"]))):
+            vals = [light[lbl][g][metric] for g in ("dia", "noite")]
+            bars = ax.bar(np.arange(2) + (k - 1) * 0.27, vals, 0.25, color=c, label=lbl)
+            ax.bar_label(bars, fmt="%.3f", fontsize=9, padding=2)
+        ax.set_xticks(range(2), [f"dia (n={int((~night).sum())})", f"noite / IR (n={int(night.sum())})"])
+        ax.set_ylim(0, 1)
+        ax.set_ylabel(f"{name} no test_public")
+        ax.set_title(name[0].upper() + name[1:])
+        ax.grid(axis="x", visible=False)
+    axes[0].legend(loc="upper left")
+    fig.suptitle("Dia vs. noite: piso, professor e aluno", fontweight="bold")
     fig.savefig(OUT / "09_noite_vs_dia_todos.png")
     plt.close(fig)
 
@@ -147,31 +156,19 @@ def main():
 
     summary = {
         "chosen": chosen,
-        "variants": {v: {k: students[v][k] for k in ("best_epoch", "best_val_f1", "test_f1_macro", "test_accuracy")} for v in VARIANTS},
+        "variants": {v: {k: students[v].get(k) for k in ("n_train", "best_epoch", "best_val_f1", "test_f1_macro", "test_accuracy")} for v in VARIANTS},
         "per_class_student_minus_teacher": dict(zip(CLASSES, (f_s - f_t).tolist())),
         "per_class_student_minus_floor": dict(zip(CLASSES, (f_s - f_f).tolist())),
-        "by_light": {"piso": light["piso (b)"], "professor": {"dia": light["professor"], "noite": light["_t_noite"]}, "aluno": light["aluno"]},
+        "by_light": light,
     }
     (OUT / "student_results.json").write_text(json.dumps(summary, indent=2))
 
-    print("\n| variante | melhor época | F1 val | F1 test | acurácia test |\n|---|---|---|---|---|")
+    print("\n| variante | imagens de treino | melhor época | F1 val | F1 test | acurácia test |\n|---|---|---|---|---|---|")
     for v in VARIANTS:
         r = students[v]
-        print(f"| {v}{' ✓' if v == chosen else ''} | {r['best_epoch']} | {r['best_val_f1']:.3f} | {r['test_f1_macro']:.3f} | {r['test_accuracy']:.3f} |")
+        print(f"| {v}{' (escolhido)' if v == chosen else ''} | {r.get('n_train', '-')} | {r['best_epoch']} | {r['best_val_f1']:.3f} | {r['test_f1_macro']:.3f} | {r['test_accuracy']:.3f} |")
     print(f"\nreferências: piso {floor['test_f1_macro']:.3f} | professor zs {t_zs['f1_macro']:.3f} | professor melhorado {t_imp['f1_macro']:.3f} | teto {CEILING_F1}")
     print("aluno - professor por classe:", {c: round(v, 3) for c, v in sorted(summary["per_class_student_minus_teacher"].items(), key=lambda kv: -kv[1])})
-
-
-def _floor_pred(ds):
-    import torch
-
-    from pa3.config import CKPT_DIR
-    from pa3.engine import predict_logits
-    from pa3.models import build_resnet18
-
-    m = build_resnet18(pretrained=False)
-    m.load_state_dict(torch.load(CKPT_DIR / "floor" / "resnet18_b5_s0.pt"))
-    return predict_logits(m, ds).argmax(1)
 
 
 if __name__ == "__main__":
