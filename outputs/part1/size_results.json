@@ -64,5 +64,25 @@
       "teacher_zs_pred_woodchuck": 0.34285714285714286,
       "true_woodchuck": 0.0
     }
+  },
+  "center_crop": {
+    "animal na borda": {
+      "n": 117,
+      "accuracy": {
+        "piso (b)": 0.4444444444444444,
+        "professor zero-shot": 0.21367521367521367,
+        "professor melhorado": 0.2564102564102564,
+        "aluno": 0.7094017094017094
+      }
+    },
+    "animal no centro": {
+      "n": 659,
+      "accuracy": {
+        "piso (b)": 0.49013657056145676,
+        "professor zero-shot": 0.7132018209408194,
+        "professor melhorado": 0.7647951441578149,
+        "aluno": 0.7405159332321699
+      }
+    }
   }
 }

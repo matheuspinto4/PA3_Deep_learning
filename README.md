@@ -27,17 +27,26 @@ pa3/
   metrics.py     # F1 macro, acurácia, F1 por classe, matriz de confusão
   floor.py       # receita do piso (Parte 0, reutilizada na Parte 2)
   teacher.py     # Trilha C: professor (BioCLIP/CLIP), prompts, professor melhorado
-  student.py     # Trilha C: aluno ResNet-18 nos pseudo-rótulos (3 variantes)
+  student.py     # Trilha C: aluno ResNet-18 nos pseudo-rótulos (6 variantes)
+  saliency.py    # Grad-CAM, oclusão e fração da atenção dentro do animal
   plotting.py    # estilo e matriz de confusão
 scripts/
-  build_cache.py      # pré-redimensiona as imagens uma vez (cache/)
-  part0_floor.py      # Parte 0: o piso
-  part1_teacher.py    # Parte 1: escolha e análise do professor + pseudo-rótulos
-  part1_student.py    # Parte 1: alunos, comparação com professor e piso
-outputs/partN/        # figuras e números de cada parte
-outputs/floor_runs/   # cada rodada do piso (json + logits de teste)
-logs/                 # saída dos treinos
-AI_LOG.md             # uso de IA no projeto
+  build_cache.py            # pré-redimensiona as imagens uma vez (cache/)
+  part0_floor.py            # Parte 0: o piso
+  part1_teacher.py          # Parte 1: escolha e análise do professor + pseudo-rótulos
+  part1_megadetector.py     # Parte 1: caixas dos animais (só medição, não entra no modelo)
+  part1_student.py          # Parte 1: alunos, comparação com professor e piso
+  part1_size_analysis.py    # Parte 1: acerto por tamanho/posição do animal
+  part2_budget.py           # Parte 2: curva de orçamento
+  part3_gallery.py          # Parte 3: galeria de erros e acertos com saliência
+  export_model.py           # empacota o aluno escolhido em weights/modelo_final.pt
+predict.py                  # modelo entregue: pasta de imagens -> CSV
+colab/run_pa3.ipynb         # o mesmo pipeline em GPU no Colab
+outputs/partN/              # figuras e números de cada parte
+outputs/floor_runs/         # cada rodada do piso (json + logits de teste)
+outputs/part1/students/     # cada rodada do aluno (json + logits de teste)
+curva_orcamento.csv         # entregável da Parte 2
+AI_LOG.md                   # uso de IA no projeto
 ```
 
 ## Comandos
@@ -48,6 +57,7 @@ python scripts/part0_floor.py         # Parte 0 (~35 min em CPU)
 python scripts/part1_teacher.py       # Parte 1: professor (~2 h em CPU na 1a vez; depois, segundos)
 python scripts/part1_megadetector.py  # Parte 1: tamanho dos animais (requer ultralytics)
 python scripts/part1_student.py       # Parte 1: 6 alunos (GPU recomendada)
+python scripts/part1_size_analysis.py # Parte 1: tamanho e posição do animal
 python scripts/part2_budget.py        # Parte 2: curva de orçamento (GPU recomendada)
 ```
 
@@ -150,5 +160,135 @@ mostrado ao professor. O test_public aparece só como referência.
   test_public, não seleção): com τ=0,8 os pseudo-rótulos do professor
   melhorado têm ~98% de precisão em ~45% das imagens. Com τ=0,5, ~88% em ~67%.
 
-Análise por **tamanho do animal** (MegaDetector) e os **alunos** saem do
-Colab (ver acima).
+## Parte 1 — Trilha C: o aluno
+
+O aluno é uma ResNet-18 ImageNet treinada em **todo o train** (6.505 imagens)
+com os pseudo-rótulos do professor, mais os 105 rótulos verdadeiros com peso 5.
+Seis formas de tratar o ruído, todas com a mesma receita (12 épocas, época
+escolhida no val), seed 0, orçamento 5 (`07_alunos_variantes.png`):
+
+| variante | imagens usadas | F1 val | F1 test | acurácia test |
+|---|---|---|---|---|
+| duro, professor zero-shot (sem tratamento) | 6.505 | 0,516 | 0,545 | 0,565 |
+| duro, professor melhorado | 6.505 | 0,562 | 0,567 | 0,587 |
+| suave (distribuição do professor) | 6.505 | 0,603 | 0,616 | 0,656 |
+| suave + filtro τ=0,3 | 5.640 | 0,612 | 0,629 | 0,673 |
+| suave + filtro τ=0,5 | 4.483 | 0,670 | 0,623 | 0,647 |
+| **suave + filtro τ=0,7** (escolhido no val) | 3.745 | **0,677** | **0,683** | **0,736** |
+
+Cada tratamento do ruído soma ganho: professor melhorado (+0,02), rótulo
+suave em vez de argmax (+0,05), descartar os 42% menos confiáveis (+0,07).
+Jogar fora metade dos dados ajudou, porque os pseudo-rótulos de baixa
+confiança são justamente os errados (`06_precisao_cobertura.png`).
+
+**Resultado: o aluno empata com o professor no F1 (0,683 vs. 0,682) e o
+supera em acurácia (0,736 vs. 0,681)**, com menos de 1/25 dos parâmetros
+do encoder de imagem do BioCLIP 2 (ViT-L/14, ~300M) e rodando em CPU. Fica a 0,003 do teto (0,686), que usa todos os rótulos do
+train.
+
+### Onde o aluno supera o professor, e por quê
+
+`08_aluno_vs_professor_classe.png` e `11_tamanho_animal.png`. O aluno ganha
+em dog (+0,40), chicken (+0,30), opossum (+0,24), woodchuck (+0,23), deer
+(+0,18) e chipmunk (+0,17). Três razões, medidas:
+
+1. **Ele vê o quadro inteiro.** O professor (ViT) recebe só o quadrado
+   central da foto e perde 12,5% de cada lateral. Usando as caixas do
+   MegaDetector, 117 imagens do teste (15%) têm mais da metade do animal fora
+   desse quadrado. **Nelas o professor acerta 21–26% e o aluno, 71%.** No
+   centro, os dois empatam (0,76 vs. 0,74). A entrada 224×320 sem crop foi
+   decidida na Parte 0 por esse motivo, e aqui ela rende.
+2. **Ele herda a parte limpa do professor, não os vícios.** O woodchuck-ímã
+   não passa para o aluno. O professor zero-shot prevê woodchuck 134 vezes e
+   o melhorado 65; o aluno, 32 (são 22 de verdade). Essas previsões do
+   professor têm baixa confiança, então o filtro τ=0,7 as descarta, e o aluno
+   aprende woodchuck só com os exemplos claros. Por isso dog e chipmunk, que
+   vazavam para woodchuck, sobem.
+3. **Ele aprende a cena.** Câmeras trap são fixas, e o aluno, treinado em
+   6,5 mil fotos dessas mesmas câmeras, usa o contexto. Com animal minúsculo
+   (<2% do quadro, 31% das imagens), o professor acerta 0,52 e o aluno, 0,73.
+   Quando o MegaDetector **não encontra animal nenhum** (35 imagens), o aluno
+   ainda acerta 74%, contra 40% do professor zero-shot. Só a cena explica isso.
+
+### Onde ele perde: o mesmo atalho, do outro lado
+
+O aluno perde para o professor em eastern_cottontail (−0,67), bird (−0,42) e
+bobcat (−0,23). **O coelho é o caso mais claro de atalho de fundo:**
+
+- Os 26 coelhos do test_public são **uma única sequência noturna** de uma
+  câmera (árvore e tufo de capim) com um coelho minúsculo. O aluno chama **17
+  deles de domestic_cat**.
+- Os pseudo-rótulos não são o problema. No espaço do BioCLIP, os vizinhos
+  mais próximos de cada coelho do teste no train são coelhos (dos 10
+  vizinhos de cada um que passaram no filtro, 139 de 147 são coelhos).
+- No espaço de **pixels**, porém, os vizinhos são outras fotos **da mesma
+  câmera** (1.154 imagens do train com similaridade > 0,9), e lá o professor
+  rotulou, corretamente, gatos, gambás-de-cauda-preênsil e raposas. Para uma
+  CNN, "esta cena à noite" significa "gato", e o coelho de poucos pixels não
+  muda isso.
+- O piso b20, com seus 420 rótulos, acerta todos os 26: a mesma cena entra
+  com o rótulo certo.
+
+O BioCLIP olha para o animal; o aluno olha para a foto. Isso ajuda em 15%
+do teste (animal na borda, animal minúsculo) e quebra em uma câmera. É também
+o caso que levaremos para a Parte 3.
+
+**Dia e noite** (`09_noite_vs_dia_todos.png`): de dia o aluno supera o
+professor (acurácia 0,745 vs. 0,621). À noite fica um pouco abaixo (0,726
+vs. 0,744), e o coelho noturno responde por boa parte dessa diferença.
+
+**Pergunta da apresentação: e se aparecer uma capivara?** O aluno tem 21
+saídas e vai sempre escolher uma delas. Três sinais para detectar o
+fora-de-distribuição, todos sem rótulo:
+
+- **Confiança baixa do aluno:** softmax máximo ou energia. Como o aluno erra
+  com confiança alta em cenas conhecidas (o coelho), esse sinal sozinho não
+  basta.
+- **Discordância professor × aluno.**
+- **Distância do embedding do BioCLIP ao protótipo mais próximo.**
+
+O BioCLIP 2 é de vocabulário aberto, então basta acrescentar o texto
+"capybara" ao classificador do professor, sem treino, para nomear a classe nova
+e gerar pseudo-rótulos para ela.
+
+## Parte 2 — Curva de orçamento
+
+Mesma receita do piso (b) e do aluno escolhido (`soft_improved_tau70`) com 1,
+5 e 20 rótulos por classe. No orçamento 5 foram 3 seeds; a seed muda a
+inicialização da cabeça, a ordem dos lotes e a aumentação, e os rótulos são
+os mesmos. Números em `curva_orcamento.csv`; figuras em `outputs/part2/`.
+
+| método | 1/classe | 5/classe (3 seeds) | 20/classe |
+|---|---|---|---|
+| piso (ResNet-18, só rótulos) | 0,248 | 0,465 ± 0,006 | 0,649 |
+| **aluno (Trilha C)** | **0,585** | **0,668 ± 0,020** | 0,632 |
+| professor melhorado (referência) | 0,671 | 0,682 | 0,738 |
+| professor zero-shot (0 rótulos) | 0,649 | 0,649 | 0,649 |
+| teto (todos os rótulos) | | 0,686 | |
+
+- **Com 1 rótulo por classe, o aluno (0,585) faz mais que o piso com 5
+  (0,465).** Os dados sem rótulo valem mais que 4 rótulos por classe.
+- **Com 5, o aluno ganha +0,20 do piso** (3 seeds; desvio de 0,02 contra uma
+  diferença de 0,20) e fica perto do teto.
+- **Com 20, o piso alcança o aluno** (0,649 vs. 0,632). Dois motivos:
+  - O piso b20 já vê a câmera do coelho com o rótulo certo (F1 do coelho
+    0,57; no aluno, 0,18).
+  - O aluno b20 é **uma seed só, e o val escolheu a época 2.** O F1 de val
+    teve um pico isolado em 0,630 na época 2, caiu para 0,448 na época 3 e
+    voltou a ~0,60 no fim. Com 202 imagens de val, um pico assim é ruído, e
+    o modelo escolhido estava subtreinado.
+
+  Não refizemos a seleção olhando o teste. Registramos como limitação: com
+  20 rótulos, uma seleção de época mais estável (por exemplo, média móvel do
+  F1 de val, ou a época final) seria a primeira coisa a testar.
+- **O professor melhorado continua acima do aluno com 20 rótulos (0,738).**
+  Destilar para uma ResNet-18 custa ~0,1 de F1 nesse ponto. É a mesma troca
+  da Parte 1: o aluno ganha nas bordas e nos animais pequenos e perde nas
+  cenas em que o fundo engana.
+
+**Ganho por classe com 5 rótulos** (`02_ganho_por_classe_b5.png`, média de 3
+seeds): o aluno ganha em 17 das 21 classes. Os maiores ganhos estão nas
+classes que o piso mal reconhecia: wild_turkey (+0,55), american_crow
+(+0,43), horse (+0,36), raccoon (+0,34), woodchuck (+0,34). Há uma perda
+grande: eastern_cottontail (−0,40), o atalho de cena descrito acima. bird fica
+perto de zero nos dois (passarinhos minúsculos, 22 no teste).
