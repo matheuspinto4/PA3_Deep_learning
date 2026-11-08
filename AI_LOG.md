@@ -153,3 +153,18 @@ ajuste quando um resultado não fazia sentido ou não entendíamos uma escolha.
   Foram corrigidos rótulos sobrepostos (curva de orçamento, variantes do
   aluno, tamanho do animal, Parte 3) e uma cor enganosa (perda de −0,40
   pintada como "sem diferença").
+- **A análise do coelho virou script, e o script corrigiu o texto.** Ao
+  transformar a investigação avulsa em `scripts/part1_cottontail.py` (para
+  ser reproduzível a partir do repositório, como o enunciado exige),
+  apareceram dois exageros do texto anterior:
+  - "1.154 fotos da mesma câmera": o limiar global de correlação juntava
+    fotos escuras de várias câmeras. Refeito por câmera, o número certo é 23
+    fotos da câmera do capim.
+  - "o piso b20 acerta porque vê a câmera com o rótulo certo": falso.
+    Nenhum dos 420 rótulos é dessas câmeras. O piso b20 acerta porque prevê
+    coelho em excesso.
+
+  O resultado final é mais forte que o rascunho: os 26 coelhos vêm de 4
+  câmeras, e dentro de cada uma o aluno dá quase sempre a mesma resposta.
+  Lição registrada: número citado na apresentação tem que sair de script
+  versionado, não de código solto no terminal.
