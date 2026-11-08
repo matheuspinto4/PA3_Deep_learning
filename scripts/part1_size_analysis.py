@@ -32,6 +32,7 @@ BINS = [(0, 0.02, "<2%"), (0.02, 0.05, "2–5%"), (0.05, 0.15, "5–15%"), (0.15
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # console do Windows (cp1252) não imprime "≥"
     labels = split_labels("test_public")
     ids = sorted(labels)  # ordem de todos os arrays salvos (eval_dataset e professor)
     y = np.array([labels[i] for i in ids])
@@ -72,7 +73,7 @@ def main():
         c, a = colors[name]
         bars = ax1.bar(np.arange(len(groups)) + (j - (len(preds) - 1) / 2) * w, vals, w * 0.92, color=c, alpha=a, label=name)
         ax1.bar_label(bars, fmt="%.2f", fontsize=7.5, padding=2)
-    ax1.set_xticks(range(len(groups)), [f"{g[2]}\n(n={res['bins'][g[2]]['n']}, {res['bins'][g[2]]['frac_night']:.0%} noite)" for g in groups])
+    ax1.set_xticks(range(len(groups)), [f"{g[2]}\nn={res['bins'][g[2]]['n']}\n{res['bins'][g[2]]['frac_night']:.0%} noite" for g in groups])
     ax1.set_xlabel("área do animal no quadro (caixa do MegaDetector)")
     ax1.set_ylim(0, 1)
     ax1.set_ylabel("acurácia no test_public")
@@ -87,7 +88,7 @@ def main():
     ax2.set_xticks(range(len(groups)), [g[2] for g in groups])
     ax2.set_ylabel("fração das imagens da faixa")
     ax2.set_title("O woodchuck-ímã é efeito de animal pequeno?")
-    ax2.legend(loc="upper right", fontsize=8.5)
+    ax2.legend(loc="upper left", fontsize=8.5)
     ax2.grid(axis="x", visible=False)
     fig.suptitle("Animais pequenos: piso, professor e aluno", fontweight="bold")
     fig.savefig(OUT / "11_tamanho_animal.png")

@@ -1,0 +1,21 @@
+método da Trilha C: aluno soft_improved_tau70
+[resnet18_b1_s0] já treinado, recarregando de resnet18_b1_s0.json
+[aluno soft_improved_tau70_b1_s0] já treinado, lendo soft_improved_tau70_b1_s0.json
+[resnet18_b5_s0] já treinado, recarregando de resnet18_b5_s0.json
+[aluno soft_improved_tau70_b5_s0] já treinado, lendo soft_improved_tau70_b5_s0.json
+[resnet18_b5_s1] já treinado, recarregando de resnet18_b5_s1.json
+[aluno soft_improved_tau70_b5_s1] já treinado, lendo soft_improved_tau70_b5_s1.json
+[resnet18_b5_s2] já treinado, recarregando de resnet18_b5_s2.json
+[aluno soft_improved_tau70_b5_s2] já treinado, lendo soft_improved_tau70_b5_s2.json
+[resnet18_b20_s0] já treinado, recarregando de resnet18_b20_s0.json
+[aluno soft_improved_tau70_b20_s0] já treinado, lendo soft_improved_tau70_b20_s0.json
+
+| método | 1/classe | 5/classe (3 seeds) | 20/classe |
+|---|---|---|---|
+| piso | 0.248 | 0.465 ± 0.006 | 0.649 |
+| aluno (soft_improved_tau70) | 0.585 | 0.668 ± 0.020 | 0.632 |
+| professor melhorado | 0.671 | 0.682 | 0.738 |
+| professor zero-shot | 0.649 | 0.649 | 0.649 |
+| teto | | 0.686 | |
+
+ganho por classe (b5): {'wild_turkey': 0.5473, 'american_crow': 0.4334, 'horse': 0.3556, 'northern_raccoon': 0.3435, 'woodchuck': 0.3369, 'grey_fox': 0.3095, 'white_tailed_deer': 0.3092, 'red_fox': 0.3064, 'chicken': 0.2949, 'bobcat': 0.2459, 'eastern_fox_squirrel': 0.2433, 'american_black_bear': 0.2396, 'coyote': 0.197, 'virginia_opossum': 0.1765, 'domestic_cat': 0.1705, 'striped_skunk': 0.1308, 'dog': 0.0503, 'eastern_gray_squirrel': 0.006, 'eastern_chipmunk': 0.0053, 'bird': -0.0294, 'eastern_cottontail': -0.4037}

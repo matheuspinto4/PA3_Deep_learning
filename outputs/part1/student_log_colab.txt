@@ -1,0 +1,20 @@
+hard_zs: já treinado, lendo hard_zs_b5_s0.json
+hard_improved: já treinado, lendo hard_improved_b5_s0.json
+soft_improved: já treinado, lendo soft_improved_b5_s0.json
+soft_improved_tau30: já treinado, lendo soft_improved_tau30_b5_s0.json
+soft_improved_tau50: já treinado, lendo soft_improved_tau50_b5_s0.json
+soft_improved_tau70: já treinado, lendo soft_improved_tau70_b5_s0.json
+
+aluno escolhido pelo val: soft_improved_tau70
+
+| variante | imagens de treino | melhor época | F1 val | F1 test | acurácia test |
+|---|---|---|---|---|---|
+| hard_zs | 6505 | 7 | 0.516 | 0.545 | 0.565 |
+| hard_improved | 6505 | 9 | 0.562 | 0.567 | 0.587 |
+| soft_improved | 6505 | 7 | 0.603 | 0.616 | 0.656 |
+| soft_improved_tau30 | 5640 | 11 | 0.612 | 0.629 | 0.673 |
+| soft_improved_tau50 | 4483 | 8 | 0.670 | 0.623 | 0.647 |
+| soft_improved_tau70 (escolhido) | 3745 | 8 | 0.677 | 0.683 | 0.736 |
+
+referências: piso 0.460 | professor zs 0.649 | professor melhorado 0.682 | teto 0.686
+aluno - professor por classe: {'dog': 0.402, 'chicken': 0.3, 'virginia_opossum': 0.237, 'woodchuck': 0.23, 'white_tailed_deer': 0.18, 'eastern_chipmunk': 0.172, 'coyote': 0.099, 'american_crow': 0.053, 'northern_raccoon': 0.036, 'eastern_fox_squirrel': 0.033, 'horse': 0.032, 'wild_turkey': 0.016, 'american_black_bear': -0.011, 'grey_fox': -0.013, 'eastern_gray_squirrel': -0.018, 'domestic_cat': -0.122, 'striped_skunk': -0.128, 'red_fox': -0.148, 'bobcat': -0.229, 'bird': -0.419, 'eastern_cottontail': -0.668}

@@ -6,3 +6,4 @@ __pycache__/
 slides_notes.txt
 checkpoints/
 *.tmp
+outputs_colab.zip

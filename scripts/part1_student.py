@@ -87,14 +87,13 @@ def main():
         (CEILING_F1, f"teto {CEILING_F1}", COLORS["ceiling"], "--"),
     ]
     for y, lbl, c, ls in refs:
-        ax.axhline(y, color=c, ls=ls, lw=1.3)
-        ax.text(len(VARIANTS) - 0.45, y, " " + lbl, color=c, fontsize=8.5, va="center")
+        ax.axhline(y, color=c, ls=ls, lw=1.3, label=lbl)  # na legenda: teto e professor melhorado quase coincidem
     ax.set_xticks(xs, [LABELS[v] + ("\n✓ escolhido no val" if v == chosen else "") for v in VARIANTS], fontsize=9)
-    ax.set_xlim(-0.6, len(VARIANTS) + 0.9)
+    ax.set_xlim(-0.6, len(VARIANTS) - 0.4)
     ax.set_ylim(0, 1)
     ax.set_ylabel("F1 macro")
     ax.set_title("Aluno ResNet-18 — formas de usar os pseudo-rótulos (5 rótulos/classe)")
-    ax.legend(loc="upper left")
+    ax.legend(loc="upper left", ncol=3, fontsize=9)
     ax.grid(axis="x", visible=False)
     fig.savefig(OUT / "07_alunos_variantes.png")
     plt.close(fig)
@@ -105,7 +104,7 @@ def main():
     f_s, f_t, f_f = (np.array(x) for x in (s["test_f1_per_class"], teacher_used["f1_per_class"], floor["test_f1_per_class"]))
     order = np.argsort(f_s - f_t)
     y = np.arange(len(CLASSES))
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7.5), gridspec_kw={"width_ratios": [1.4, 1]})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7.5), gridspec_kw={"width_ratios": [1.4, 1], "wspace": 0.38})
     for k, (vals, lbl, c) in enumerate(((f_f, "piso (b)", COLORS["floor"]), (f_t, "professor", COLORS["teacher"]), (f_s, "aluno", COLORS["student"]))):
         ax1.barh(y + (k - 1) * 0.27, vals[order], 0.25, color=c, label=lbl)
     ax1.set_yticks(y, [CLASSES[i] for i in order], fontsize=9)

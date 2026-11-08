@@ -86,13 +86,15 @@ def plot_curve(summary: dict, method_label: str, path: Path) -> None:
     ax.axhline(CEILING_F1, color=COLORS["ceiling"], ls="--", lw=1.5, label=f"teto: todos os rótulos do train ({CEILING_F1})")
     ax.axhline(zs, color=COLORS["teacher"], ls=":", lw=1.5, label=f"professor zero-shot, 0 rótulos ({zs:.3f})")
     offsets = {"piso": (10, -14), "professor melhorado": (10, 8)}
+    # pontos que caem perto de outro em algum orçamento: rótulo para baixo/cima
+    point_offsets = {(method_label, 5): (10, -16), (method_label, 20): (10, -16), ("piso", 20): (10, 6)}
     for key, lbl, c, mk, ls in styles:
         m = np.array([summary[key][b]["f1_mean"] for b in BUDGETS])
         e = np.array([summary[key][b]["f1_std"] for b in BUDGETS])
         ax.errorbar(x, m, yerr=e, color=c, marker=mk, ms=8, ls=ls, lw=2, capsize=5, label=lbl, mec="white", mew=1.5, zorder=3)
         for xi, mi, b in zip(x, m, BUDGETS):
             txt = f"{mi:.3f}" + (f" ± {summary[key][b]['f1_std']:.3f}" if summary[key][b]["n_seeds"] > 1 else "")
-            ax.annotate(txt, (xi, mi), textcoords="offset points", xytext=offsets.get(key, (10, -3)), fontsize=8.5, color=c)
+            ax.annotate(txt, (xi, mi), textcoords="offset points", xytext=point_offsets.get((key, b), offsets.get(key, (10, -3))), fontsize=8.5, color=c)
     ax.set_xscale("log")
     ax.set_xticks(x, [f"{b}/classe\n({b * NUM_CLASSES})" for b in BUDGETS])
     ax.minorticks_off()
@@ -114,7 +116,7 @@ def plot_gain(rows: list[dict], method_label: str, path: Path) -> dict:
     gain = f_meth - f_floor
     order = np.argsort(gain)
     y = np.arange(NUM_CLASSES)
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7.5), gridspec_kw={"width_ratios": [1.3, 1]})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7.5), gridspec_kw={"width_ratios": [1.3, 1], "wspace": 0.38})
     ax1.barh(y + 0.2, f_floor[order], 0.38, color=COLORS["floor"], label="piso")
     ax1.barh(y - 0.2, f_meth[order], 0.38, color=COLORS["student"], label="aluno")
     ax1.set_yticks(y, [CLASSES[i] for i in order], fontsize=9)
@@ -123,11 +125,11 @@ def plot_gain(rows: list[dict], method_label: str, path: Path) -> dict:
     ax1.set_title("F1 por classe, 5 rótulos/classe")
     ax1.legend(loc="lower right")
     ax1.grid(axis="y", visible=False)
-    ax2.barh(y, gain[order], 0.6, color=[COLORS["student"] if g > 0.02 else INK_MUTED for g in gain[order]])
+    ax2.barh(y, gain[order], 0.6, color=[COLORS["student"] if g > 0.02 else COLORS["floor"] if g < -0.02 else INK_MUTED for g in gain[order]])
     ax2.axvline(0, color=INK_MUTED, lw=1)
     ax2.set_yticks(y, [CLASSES[i] for i in order], fontsize=9)
     ax2.set_xlabel("F1 aluno − F1 piso")
-    ax2.set_title("Ganho por classe (cinza: |ganho| ≤ 0,02)")
+    ax2.set_title("Ganho por classe (laranja: aluno melhor; azul: piso melhor;\ncinza: |ganho| ≤ 0,02)", fontsize=11)
     ax2.grid(axis="y", visible=False)
     fig.suptitle("Parte 2 — onde os dados sem rótulo ajudaram (orçamento 5)", fontweight="bold")
     fig.savefig(path)

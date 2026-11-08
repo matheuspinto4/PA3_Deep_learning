@@ -1,0 +1,137 @@
+{
+  "chosen": "soft_improved_tau70",
+  "variants": {
+    "hard_zs": {
+      "n_train": 6505,
+      "best_epoch": 7,
+      "best_val_f1": 0.5156753834601832,
+      "test_f1_macro": 0.5452914300332166,
+      "test_accuracy": 0.5647348951911221
+    },
+    "hard_improved": {
+      "n_train": 6505,
+      "best_epoch": 9,
+      "best_val_f1": 0.5618767352441691,
+      "test_f1_macro": 0.5666352871222968,
+      "test_accuracy": 0.5869297163995068
+    },
+    "soft_improved": {
+      "n_train": 6505,
+      "best_epoch": 7,
+      "best_val_f1": 0.6031123086439368,
+      "test_f1_macro": 0.6157512004207683,
+      "test_accuracy": 0.655980271270037
+    },
+    "soft_improved_tau30": {
+      "n_train": 5640,
+      "best_epoch": 11,
+      "best_val_f1": 0.6119310962113299,
+      "test_f1_macro": 0.6285169451331102,
+      "test_accuracy": 0.6732429099876696
+    },
+    "soft_improved_tau50": {
+      "n_train": 4483,
+      "best_epoch": 8,
+      "best_val_f1": 0.6700319380693589,
+      "test_f1_macro": 0.6229632519099739,
+      "test_accuracy": 0.6473489519112207
+    },
+    "soft_improved_tau70": {
+      "n_train": 3745,
+      "best_epoch": 8,
+      "best_val_f1": 0.6770007402305539,
+      "test_f1_macro": 0.6831867085203784,
+      "test_accuracy": 0.7361282367447596
+    }
+  },
+  "per_class_student_minus_teacher": {
+    "american_black_bear": -0.011015911872705009,
+    "american_crow": 0.05280830280830284,
+    "bird": -0.419047619047619,
+    "bobcat": -0.22938530734632684,
+    "chicken": 0.3002875530603861,
+    "coyote": 0.09870129870129873,
+    "dog": 0.40178815801477974,
+    "domestic_cat": -0.12247891455812243,
+    "eastern_chipmunk": 0.17214611872146124,
+    "eastern_cottontail": -0.6677018633540373,
+    "eastern_fox_squirrel": 0.033205619412515985,
+    "eastern_gray_squirrel": -0.017526777020447915,
+    "grey_fox": -0.013389711064129672,
+    "horse": 0.031746031746031744,
+    "northern_raccoon": 0.03568977350720659,
+    "red_fox": -0.14848484848484855,
+    "striped_skunk": -0.12848551120831053,
+    "virginia_opossum": 0.23746823746823742,
+    "white_tailed_deer": 0.17987982167086636,
+    "wild_turkey": 0.015837104072398134,
+    "woodchuck": 0.2298850574712643
+  },
+  "per_class_student_minus_floor": {
+    "american_black_bear": 0.30307576894223553,
+    "american_crow": 0.4795677136102668,
+    "bird": 0.05714285714285714,
+    "bobcat": 0.2291421856639248,
+    "chicken": 0.36589778380823157,
+    "coyote": 0.32272727272727275,
+    "dog": 0.07341855129465757,
+    "domestic_cat": 0.21085441877521088,
+    "eastern_chipmunk": 0.015846994535519188,
+    "eastern_cottontail": -0.4516483516483517,
+    "eastern_fox_squirrel": 0.13067150635208713,
+    "eastern_gray_squirrel": -0.005974607916355401,
+    "grey_fox": 0.47751937984496123,
+    "horse": 0.0,
+    "northern_raccoon": 0.4308510638297872,
+    "red_fox": 0.341025641025641,
+    "striped_skunk": 0.20296610169491525,
+    "virginia_opossum": 0.19471639471639468,
+    "white_tailed_deer": 0.25979990159094635,
+    "wild_turkey": 0.6568627450980392,
+    "woodchuck": 0.39024390243902435
+  },
+  "by_light": {
+    "piso (b)": {
+      "dia": {
+        "n": 420,
+        "n_classes": 16,
+        "accuracy": 0.49047619047619045,
+        "f1_macro": 0.36657785140425697
+      },
+      "noite": {
+        "n": 391,
+        "n_classes": 15,
+        "accuracy": 0.4782608695652174,
+        "f1_macro": 0.40319300709888545
+      }
+    },
+    "professor": {
+      "dia": {
+        "n": 420,
+        "n_classes": 16,
+        "accuracy": 0.6214285714285714,
+        "f1_macro": 0.6171508953622556
+      },
+      "noite": {
+        "n": 391,
+        "n_classes": 15,
+        "accuracy": 0.7442455242966752,
+        "f1_macro": 0.6489188557975862
+      }
+    },
+    "aluno": {
+      "dia": {
+        "n": 420,
+        "n_classes": 16,
+        "accuracy": 0.7452380952380953,
+        "f1_macro": 0.6399742261154411
+      },
+      "noite": {
+        "n": 391,
+        "n_classes": 15,
+        "accuracy": 0.7263427109974424,
+        "f1_macro": 0.6147754798534942
+      }
+    }
+  }
+}
