@@ -12,9 +12,37 @@ source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
 pip install -r requirements.txt
 ```
 
-Tudo foi desenvolvido e rodado **em CPU** (sem GPU: i5-1240P, 16 GB), com
-PyTorch 2.14 CPU. Os dados (`pa3_dados.zip`) devem ser extraídos em
-`pa3_dados/pa3_dados/` (fora do git).
+Desenvolvido em CPU (i5-1240P, 16 GB, PyTorch 2.14); os treinos pesados
+rodaram no Colab (ver "Onde cada coisa rodou"). Os dados (`pa3_dados.zip`)
+devem ser extraídos em `pa3_dados/pa3_dados/` (fora do git).
+
+## Modelo entregue
+
+| | |
+|---|---|
+| arquitetura | ResNet-18 (ImageNet → aluno da Trilha C, `soft_improved_tau70`, orçamento 5, seed 0) |
+| parâmetros | **11.187.285** (limite: 12M) |
+| pesos | `weights/modelo_final.pt` (44,8 MB; inclui nomes das classes e resolução 224×320) |
+| F1 macro test_public | **0,683** (acurácia 0,736) |
+| tempo em CPU | 811 imagens em 17–50 s (i5-1240P); o test_private cabe com folga em 10 min |
+
+**Um comando que treina** (a partir dos pseudo-rótulos versionados em
+`outputs/part1/pseudo_labels/`; GPU recomendada, ~10 min numa T4, ~1h20 em CPU):
+
+```bash
+python scripts/build_cache.py && python scripts/part1_student.py && python scripts/export_model.py checkpoints/student/soft_improved_tau70_b5_s0.pt
+```
+
+(Para refazer também os pseudo-rótulos, rode antes `python scripts/part1_teacher.py`.)
+
+**Um comando que avalia** (CPU, sem internet, imprime os parâmetros):
+
+```bash
+python predict.py --imagens pa3_dados/pa3_dados/images/test_public --saida preds.csv --rotulos pa3_dados/pa3_dados/labels/test_public.csv
+```
+
+Sem `--rotulos`, só escreve o CSV `image_id,label`, que é o formato pedido
+para o test_private.
 
 ## Estrutura
 
@@ -292,3 +320,69 @@ classes que o piso mal reconhecia: wild_turkey (+0,55), american_crow
 (+0,43), horse (+0,36), raccoon (+0,34), woodchuck (+0,34). Há uma perda
 grande: eastern_cottontail (−0,40), o atalho de cena descrito acima. bird fica
 perto de zero nos dois (passarinhos minúsculos, 22 no teste).
+
+## Parte 3 — Erros e acertos com mapas de saliência
+
+Modelo final no test_public. Dois mapas por imagem: **Grad-CAM** na `layer4`
+(grosso, 7×10 células de 32 px) e **oclusão** (quadrado de 32 px tapado com
+passo 16; mede quanto a probabilidade cai). A caixa verde é do MegaDetector,
+usada só para medir quanto da saliência cai no animal. As 8 imagens foram
+escolhidas **por regras fixadas antes de olhar** (`scripts/part3_gallery.py`),
+não a dedo:
+
+- erro mais confiante;
+- erro com o menor animal;
+- erro com animal ≥3% do quadro e a menor atenção no animal;
+- para os acertos, os 3 mais focados no animal e os 2 menos focados, de
+  classes diferentes e com animal ≥2%.
+
+Figuras: `outputs/part3/01_erros.png`, `02_acertos.png`,
+`03_atencao_animal_vs_fundo.png`.
+
+### Três erros
+
+| # | verdadeiro → previsto | o que os mapas mostram | diagnóstico |
+|---|---|---|---|
+| E1 | striped_skunk → american_black_bear (0,96) | Grad-CAM **no animal** (35% da saliência numa caixa de 13% do quadro). A oclusão concentra-se na cabeça. | **Olhou o lugar certo e leu o traço errado.** O gambá passa rápido e o borrão de movimento apaga a listra branca. Sobra uma massa escura e volumosa à noite, que é o que define "urso" no treino. Aumentação com borrão de movimento ou mais gambás noturnos atacariam isso. |
+| E2 | eastern_cottontail → domestic_cat (0,74) | Coelho de 16×15 px (0,4% do quadro). Grad-CAM no tufo de capim; **1% da saliência no animal**. A oclusão espalha-se pelo fundo. | **Atalho de cena**, o mesmo da Parte 1. Esta câmera aparece no train com gatos e gambás-de-cauda-preênsil, e o modelo reconhece o lugar, não o bicho. Tapar o coelho não muda nada. |
+| E3 | striped_skunk → grey_fox (0,54) | Gambá grande e nítido, mas **cortado no canto** inferior esquerdo. Grad-CAM **0%** na caixa, concentrado no meio da cena. | **Nem olhou para o animal.** Um animal entrando pela borda é raro no treino, e o modelo decidiu pelo cenário, com baixa confiança (0,54; o gambá aparece em 3º, 0,14). |
+
+### Cinco acertos
+
+| # | classe | atenção no animal | leitura |
+|---|---|---|---|
+| A1 | striped_skunk (0,52) | 15% numa caixa de 2,1% (7× o acaso). Os dois mapas centrados no gambá. | Certo pelo motivo certo, mesmo com animal pequeno e na borda. |
+| A2 | american_black_bear (0,48) | 19% numa caixa de 2,8%. A oclusão é máxima sobre o urso. | Certo pelo motivo certo. |
+| A3 | horse (0,46) | 57% numa caixa de 8,9%. | O cavalo está **cortado na borda direita**: exatamente o que o center crop do professor perderia. A oclusão também marca o chão, ou seja, parte da decisão vem da cena. |
+| A4 | virginia_opossum (0,78) | **1%**. Grad-CAM e oclusão sobre o **poste de luz e as árvores iluminadas**. | **Certo pelo motivo errado.** Esta câmera, de um estacionamento à noite, é "terra de gambá-de-cauda-preênsil" no treino. Tapar o animal não muda a resposta; tapar o poste, sim. |
+| A5 | domestic_cat (0,72) | **1%**. Atenção nos galhos do alto. | Mesmo caso: acerto pela cena. Em outra câmera, o mesmo gato provavelmente não seria reconhecido. |
+
+### Olha para o animal ou para o fundo? (agregado, 776 imagens com caixa)
+
+`03_atencao_animal_vs_fundo.png`. A pergunta tem resposta quantitativa: a
+fração do Grad-CAM dentro da caixa, comparada com a área da caixa (o que
+daria uma atenção uniforme).
+
+| área do animal | atenção no animal (acertos) | (erros) | área da caixa (acaso) | pico do mapa no animal (acertos / erros) |
+|---|---|---|---|---|
+| <2% | 2,5% | 2,7% | ~1% | 9% / 7% |
+| 2–5% | 11% | 7% | ~3% | 45% / 15% |
+| 5–15% | 26% | 24% | ~9% | 79% / 54% |
+| ≥15% | 57% | 44% | ~27% | 91% / 47% |
+
+- **Animal grande: o modelo olha para o animal.** A atenção fica em 2–3× o
+  acaso, e o pico do mapa cai no animal em 79–91% dos acertos.
+- **Animal pequeno: olha para o fundo.** Abaixo de 2% do quadro (30% das
+  imagens), a atenção no animal é praticamente o acaso, e o pico só cai nele
+  em 9% dos casos. **Mesmo assim, o modelo acerta 72% dessas imagens**: a
+  decisão vem da cena.
+- **Em todas as faixas, acertos olham mais para o animal que erros.** No
+  pointing game: 50% contra 28% no geral.
+
+**Conclusão.** Com animal visível, o modelo aprendeu o animal. Com animal
+pequeno, ele aprendeu *qual câmera costuma ter qual bicho*. É esse hábito que
+o faz superar o professor (Parte 1: animal minúsculo, nenhuma detecção) e
+falhar em bloco quando uma câmera recebe um visitante raro (o coelho). Num
+test_private com as mesmas câmeras, isso ajuda; com câmeras novas, o desempenho
+nos animais pequenos deve cair bastante. Seria a primeira coisa a medir com
+mais tempo, por exemplo agrupando por câmera.

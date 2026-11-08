@@ -7,3 +7,4 @@ slides_notes.txt
 checkpoints/
 *.tmp
 outputs_colab.zip
+outputs/final_model/

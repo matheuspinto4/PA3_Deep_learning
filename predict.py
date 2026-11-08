@@ -1,10 +1,11 @@
 """Classifica uma pasta de imagens com o modelo entregue (PA3).
 
-    python predict.py --imagens PASTA --saida preds.csv
+    python predict.py --imagens PASTA --saida preds.csv [--rotulos rotulos.csv]
 
 Escreve um CSV com colunas image_id,label (image_id = nome do arquivo sem a
 extensão; label = nome da classe como em classes.csv). Roda em CPU, sem
-internet, e imprime o número de parâmetros do modelo.
+internet, e imprime o número de parâmetros do modelo. Com --rotulos (CSV
+image_id,label, ex.: labels/test_public.csv) também imprime F1 macro e acurácia.
 
 Autocontido de propósito: não depende do pacote de dados nem do resto do
 repositório. Os nomes das classes e a resolução de entrada estão salvos junto
@@ -46,12 +47,30 @@ def preprocess(path: Path, hw: tuple[int, int]) -> np.ndarray:
     return ((x - IMAGENET_MEAN) / IMAGENET_STD).transpose(2, 0, 1)
 
 
+def evaluate(rows, labels_csv: Path, classes) -> None:
+    """F1 macro (sobre as classes de classes.csv) e acurácia, sem sklearn."""
+    with open(labels_csv, newline="") as f:
+        truth = {r["image_id"]: r["label"] for r in csv.DictReader(f)}
+    pairs = [(truth[i], p) for i, p in rows if i in truth]
+    if not pairs:
+        raise SystemExit(f"nenhuma imagem da pasta está em {labels_csv}")
+    f1s = []
+    for c in classes:
+        tp = sum(t == c and p == c for t, p in pairs)
+        fp = sum(t != c and p == c for t, p in pairs)
+        fn = sum(t == c and p != c for t, p in pairs)
+        f1s.append(2 * tp / (2 * tp + fp + fn) if tp + fp + fn else 0.0)
+    acc = sum(t == p for t, p in pairs) / len(pairs)
+    print(f"{len(pairs)} imagens com rótulo: F1 macro {np.mean(f1s):.4f} | acurácia {acc:.4f}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--imagens", required=True, type=Path, help="pasta com as imagens")
     ap.add_argument("--saida", required=True, type=Path, help="CSV de saída (image_id,label)")
     ap.add_argument("--pesos", type=Path, default=DEFAULT_WEIGHTS, help="arquivo de pesos (padrão: weights/modelo_final.pt)")
     ap.add_argument("--batch", type=int, default=32)
+    ap.add_argument("--rotulos", type=Path, help="CSV image_id,label opcional: imprime F1 macro e acurácia")
     args = ap.parse_args()
 
     torch.set_grad_enabled(False)
@@ -75,6 +94,8 @@ def main():
         w.writerow(["image_id", "label"])
         w.writerows(rows)
     print(f"\n{len(rows)} imagens classificadas em {time.time() - t0:.1f}s (CPU) -> {args.saida}")
+    if args.rotulos:
+        evaluate(rows, args.rotulos, classes)
 
 
 if __name__ == "__main__":

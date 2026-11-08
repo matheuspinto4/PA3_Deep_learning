@@ -121,3 +121,35 @@ ajuste quando um resultado não fazia sentido ou não entendíamos uma escolha.
   `ultralytics` usa não carrega (falta uma DLL do sistema), então ele roda no
   Colab. Para não depender do pacote PytorchWildlife, que traz muitas
   dependências, pegamos a URL oficial dos pesos lendo o código-fonte dele.
+
+### Depois do Colab: análise dos alunos, da curva e da Parte 3
+
+- **O coelho investigado antes de ser explicado.** O aluno perdeu −0,67 de F1
+  em eastern_cottontail em relação ao professor. A primeira hipótese da IA
+  (pseudo-rótulos ruins) foi **refutada pelos dados**: os vizinhos dos
+  coelhos do teste no espaço do BioCLIP eram coelhos com alta confiança. Só
+  depois de olhar as imagens apareceu a causa real: os 26 coelhos são uma
+  sequência de uma única câmera, e essa câmera aparece no train com gatos.
+  Isso foi confirmado por vizinhos em pixels. A explicação no README é a
+  confirmada, não a primeira.
+- **Center crop do professor.** Um número levantado na análise, e não
+  previsto: 15% do teste tem o animal majoritariamente fora do quadrado
+  central que o ViT vê. Ali o professor acerta ~25% e o aluno 71%. Virou um
+  painel da figura 11 e a explicação principal de "onde o aluno supera o
+  professor".
+- **Aluno b20 abaixo do piso b20.** O histórico mostrou que o val escolheu a
+  época 2 por um pico isolado. Decidimos **não** reescolher a época olhando o
+  teste e registrar como limitação, com a correção que testaríamos (seleção
+  de época suavizada).
+- **Pesos do modelo final.** A célula que copiava o checkpoint não rodou no
+  Colab, e o arquivo foi baixado do Drive à mão. O `predict.py` com os pesos
+  exportados reproduz exatamente o F1 do treino (0,6832), conferido antes de
+  qualquer texto.
+- **Galeria da Parte 3 com seleção por regra.** As 3 imagens de erro e as 5
+  de acerto saem de regras escritas antes de ver os mapas, para não escolher
+  os exemplos que confirmam a narrativa. Dois dos cinco acertos ("certos
+  pelo motivo errado") vieram dessa regra, não de escolha.
+- **Revisão de figuras.** Toda figura foi aberta e olhada depois de gerada.
+  Foram corrigidos rótulos sobrepostos (curva de orçamento, variantes do
+  aluno, tamanho do animal, Parte 3) e uma cor enganosa (perda de −0,40
+  pintada como "sem diferença").

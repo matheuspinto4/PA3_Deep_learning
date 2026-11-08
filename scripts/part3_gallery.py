@@ -169,7 +169,8 @@ def main():
                 ax1.text(k + (j - 0.5) * 0.38, np.nanmean(mass[s]) + 0.01, f"n={s.sum()}", ha="center", fontsize=8, color=INK_MUTED)
         ax1.plot([k - 0.4, k + 0.4], [area[sel].mean()] * 2 if sel.any() else [0, 0], color=INK_MUTED, ls="--", lw=1.2,
                  label="área da caixa (acaso)" if k == 0 else None)
-    ax1.set_xticks(range(len(bins)), [f"animal {b[2]} do quadro\n(n={int((has & (area >= b[0]) & (area < b[1])).sum())})" for b in bins])
+    ax1.set_xticks(range(len(bins)), [f"{b[2]}\n(n={int((has & (area >= b[0]) & (area < b[1])).sum())})" for b in bins])
+    ax1.set_xlabel("área do animal no quadro")
     ax1.set_ylim(0, 1)
     ax1.set_ylabel("fração do Grad-CAM dentro da caixa do animal")
     ax1.set_title("Quanto da atenção cai no animal")
