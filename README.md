@@ -1,5 +1,7 @@
 # PA3 — Poucos rótulos: fauna em câmeras trap
 
+**Matheus Pinto e Beatriz Marques** · Aprendizado Profundo (FGV), Prof. Dario Oliveira
+
 Classificação de espécie (21 classes, ENA24) com **5 rótulos por classe** e
 6.505 imagens sem rótulo. Métrica principal: **F1 macro** no `test_public`.
 Ver `PA3.pdf` para o enunciado completo.
@@ -12,9 +14,12 @@ source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
 pip install -r requirements.txt
 ```
 
+Python 3.13 (local; no Colab, a versão padrão dele); versões fixadas em
+`requirements.txt`.
 Desenvolvido em CPU (i5-1240P, 16 GB, PyTorch 2.14); os treinos pesados
 rodaram no Colab (ver "Onde cada coisa rodou"). Os dados (`pa3_dados.zip`)
-devem ser extraídos em `pa3_dados/pa3_dados/` (fora do git).
+devem ser extraídos em `pa3_dados/pa3_dados/` (fora do git). O
+`predict.py` só precisa de `torch`, `torchvision`, `numpy` e `Pillow`.
 
 ## Modelo entregue
 
@@ -26,14 +31,27 @@ devem ser extraídos em `pa3_dados/pa3_dados/` (fora do git).
 | F1 macro test_public | **0,683** (acurácia 0,736) |
 | tempo em CPU | 811 imagens em 17–50 s (i5-1240P); o test_private cabe com folga em 10 min |
 
-**Um comando que treina** (a partir dos pseudo-rótulos versionados em
-`outputs/part1/pseudo_labels/`; GPU recomendada, ~10 min numa T4, ~1h20 em CPU):
+**Um comando que treina** o modelo entregue do zero, a partir dos
+pseudo-rótulos versionados em `outputs/part1/pseudo_labels/` (~5 min numa
+GPU T4; ~1h20 em CPU):
 
 ```bash
-python scripts/build_cache.py && python scripts/part1_student.py && python scripts/export_model.py checkpoints/student/soft_improved_tau70_b5_s0.pt
+python scripts/build_cache.py && python scripts/train_final.py
 ```
 
-(Para refazer também os pseudo-rótulos, rode antes `python scripts/part1_teacher.py`.)
+- Treina só o modelo entregue, com a mesma receita e a mesma seleção de
+  época no val, e exporta para `weights/modelo_retreinado.pt`.
+- Grava em pastas próprias (`outputs/final_retrain/`), então nunca
+  sobrescreve os resultados versionados nem `weights/modelo_final.pt`. Para
+  substituir os pesos entregues, use `--saida weights/modelo_final.pt`.
+- Para refazer também os pseudo-rótulos, rode antes
+  `python scripts/part1_teacher.py`.
+
+**Reprodutibilidade.** Toda tabela e figura deste README sai dos scripts a
+partir dos resultados versionados em `outputs/`: JSONs e logits de teste de
+cada rodada. **Retreinar** não dá exatamente os mesmos números, porque em GPU
+o treino usa precisão mista, que não é determinística. A variação esperada é
+da ordem do desvio entre seeds (±0,02 de F1 para o aluno, ver Parte 2).
 
 **Um comando que avalia** (CPU, sem internet, imprime os parâmetros):
 
@@ -88,8 +106,14 @@ python scripts/part1_megadetector.py  # Parte 1: tamanho dos animais (requer ult
 python scripts/part1_student.py       # Parte 1: 6 alunos (GPU recomendada)
 python scripts/part1_size_analysis.py # Parte 1: tamanho e posição do animal
 python scripts/part1_cottontail.py    # Parte 1: o atalho de câmera nos coelhos
+python scripts/part1_teacher_multicrop.py  # Parte 1: professor com 3 recortes (~30 min em CPU)
 python scripts/part2_budget.py        # Parte 2: curva de orçamento (GPU recomendada)
+python scripts/export_model.py checkpoints/student/soft_improved_tau70_b5_s0.pt  # pesos entregues
+python scripts/part3_gallery.py       # Parte 3: galeria com saliência (usa weights/modelo_final.pt)
 ```
+
+Tempos de treino medidos numa T4: cada aluno leva 4–7 min (as 6 variantes
+somam ~35 min); cada piso, 1–3 min.
 
 Todos os treinos salvam checkpoint a cada época: rodar o mesmo comando de
 novo continua de onde parou, e rodadas já concluídas são recarregadas em vez
@@ -105,8 +129,12 @@ inteiro ficaria em ~11 h só de treino. O código é o mesmo nos dois lugares
 
 ## Decisões registradas
 
-- **Trilha da Parte 1:** C (professor e aluno). Sem GPU, é a única trilha em
-  que a parte cara (o *foundation model*) é só inferência, feita uma vez.
+- **Trilha da Parte 1:** C (professor e aluno). O trabalho começou só com
+  CPU, e nessa trilha a parte cara (o *foundation model*) é só inferência,
+  feita uma vez; os pseudo-rótulos ficam versionados. Os treinos dos alunos
+  depois foram para o Colab, mas a escolha continua valendo: o BioCLIP 2
+  conhece as espécies, o que nenhum pré-treino auto-supervisionado em 6,5 mil
+  fotos daria.
 - **Backbone:** ResNet-18 ImageNet (11.187.285 parâmetros com a cabeça de 21
   classes, abaixo do limite de 12M). É o mesmo backbone do teto (0,686).
 - **Entrada:** quadro inteiro redimensionado para 224×320 (altura×largura),
@@ -212,7 +240,17 @@ matriz de ruído dos pseudo-rótulos:
 
   ![Precisão e cobertura dos pseudo-rótulos](outputs/part1/06_precisao_cobertura.png)
 
-  Outra figura: [matriz de ruído do professor melhorado](outputs/part1/03_matriz_ruido_teacher_improved_b5.png).
+**A matriz de ruído do professor que de fato rotulou o train.** Os alunos
+finais usam os pseudo-rótulos do professor **melhorado**, não os do
+zero-shot. A matriz acima responde à pergunta do enunciado sobre o professor
+com só os nomes das classes. A matriz abaixo é a do ruído que o aluno viu.
+O woodchuck-ímã cai pela metade (de 134 para 65 previsões no teste), mas
+dog→woodchuck (20) continua sendo a maior confusão. Depois vêm crow→fox_squirrel
+(10), cottontail→opossum (8) e bird→chicken (8). Boa parte das previsões de
+woodchuck que sobram tem confiança baixa e não passa no filtro τ=0,7 (no
+train, ficam 84 de 324).
+
+![Matriz de ruído do professor melhorado](outputs/part1/03_matriz_ruido_teacher_improved_b5.png)
 
 ## Parte 1 — Trilha C: o aluno
 
@@ -310,6 +348,24 @@ do teste (animal na borda, animal minúsculo) e quebra quando uma câmera
 recebe um animal que ela "não costuma ter". O mesmo coelho reaparece como
 erro na Parte 3.
 
+**bird, american_crow e bobcat: efeito colateral do filtro de confiança.**
+
+- O filtro τ=0,7 não corta igual em todas as classes. Ele mantém **93% dos
+  pseudo-rótulos de corvo** (478 imagens), mas só **40% dos de bird** (43) e
+  **54% dos de bobcat** (92), justamente as classes em que o professor
+  hesita.
+- Depois do filtro, o aluno vê 11 corvos para cada passarinho, e o
+  desequilíbrio se amplifica:
+  - o aluno chama **10 corvos de bird**, contra 5 no professor. Bird e
+    american_crow são o par de classes parecidas que o enunciado cita: o
+    professor quase não as confunde, e o aluno passa a confundir;
+  - os passarinhos viram galinha (11 de 22) e esquilo (8);
+  - bobcat espalha-se entre esquilo-raposa (7), corvo (6) e coiote (4).
+- É o viés de classe que o filtro global cria: classe difícil fica magra no
+  treino. A correção natural seria um **limiar por classe**, como no FlexMatch:
+  mais baixo para classes em que o professor é menos confiante. Não
+  testamos.
+
 **Dia e noite:** de dia o aluno supera o professor (acurácia 0,745 vs.
 0,621). À noite fica um pouco abaixo (0,726 vs. 0,744), e o coelho noturno
 responde por boa parte dessa diferença.
@@ -398,7 +454,7 @@ não a dedo:
 
 | # | verdadeiro → previsto | o que os mapas mostram | diagnóstico |
 |---|---|---|---|
-| E1 | striped_skunk → american_black_bear (0,96) | Grad-CAM **no animal** (35% da saliência numa caixa de 13% do quadro). A oclusão concentra-se na cabeça. | **Olhou o lugar certo e leu o traço errado.** O gambá passa rápido e o borrão de movimento apaga a listra branca. Sobra uma massa escura e volumosa à noite, que é o que define "urso" no treino. Aumentação com borrão de movimento ou mais gambás noturnos atacariam isso. |
+| E1 | striped_skunk → american_black_bear (0,96) | Grad-CAM **no animal** (35% da saliência numa caixa de 13% do quadro). A oclusão concentra-se na cabeça. | **Olhou o lugar certo e leu o traço errado.** O gambá está em movimento e borrado, e a listra branca aparece pouco. Nossa leitura, não medida: sobra uma massa escura e volumosa à noite, que é o que define "urso" no treino. Se for isso, aumentação com borrão de movimento ou mais gambás noturnos ajudariam. |
 | E2 | eastern_cottontail → domestic_cat (0,74) | Coelho de 16×15 px (0,4% do quadro). Grad-CAM no tufo de capim; **1% da saliência no animal**. A oclusão espalha-se pelo fundo. | **Atalho de câmera**, o mesmo da Parte 1. É a câmera A: no train ela só aparece com gatos e gambás-de-cauda-preênsil, e o modelo reconhece o lugar, não o bicho. Tapar o coelho não muda nada. |
 | E3 | striped_skunk → grey_fox (0,54) | Gambá grande e nítido, mas **cortado no canto** inferior esquerdo. Grad-CAM **0%** na caixa, concentrado no meio da cena. | **Nem olhou para o animal.** Um animal entrando pela borda é raro no treino, e o modelo decidiu pelo cenário, com baixa confiança (0,54; o gambá aparece em 3º, 0,14). |
 
@@ -412,7 +468,7 @@ não a dedo:
 | A2 | american_black_bear (0,48) | 19% numa caixa de 2,8%. A oclusão é máxima sobre o urso. | Certo pelo motivo certo. |
 | A3 | horse (0,46) | 57% numa caixa de 8,9%. | O cavalo está **cortado na borda direita**: exatamente o que o center crop do professor perderia. A oclusão também marca o chão, ou seja, parte da decisão vem da cena. |
 | A4 | virginia_opossum (0,78) | **1%**. Grad-CAM e oclusão sobre o **poste de luz e as árvores iluminadas**. | **Certo pelo motivo errado.** Esta câmera, de um estacionamento à noite, é "terra de gambá-de-cauda-preênsil" no treino. Tapar o animal não muda a resposta; tapar o poste, sim. |
-| A5 | domestic_cat (0,72) | **1%**. Atenção nos galhos do alto. | Mesmo caso: acerto pela cena. Em outra câmera, o mesmo gato provavelmente não seria reconhecido. |
+| A5 | domestic_cat (0,72) | **1%**. Atenção nos galhos do alto. | Mesmo caso: acerto pela cena. Não testamos o mesmo gato em outra câmera, mas o coelho da Parte 1 (a resposta segue a câmera) sugere que ele não seria reconhecido. |
 
 ### Olha para o animal ou para o fundo? (agregado, 776 imagens com caixa)
 
@@ -441,7 +497,13 @@ daria uma atenção uniforme).
 **Conclusão.** Com animal visível, o modelo aprendeu o animal. Com animal
 pequeno, ele aprendeu *qual câmera costuma ter qual bicho*. É esse hábito que
 o faz superar o professor (Parte 1: animal minúsculo, nenhuma detecção) e
-falhar em bloco quando uma câmera recebe um visitante raro (o coelho). Num
-test_private com as mesmas câmeras, isso ajuda; com câmeras novas, o desempenho
-nos animais pequenos deve cair bastante. Seria a primeira coisa a medir com
-mais tempo, por exemplo agrupando por câmera.
+falhar em bloco quando uma câmera recebe um visitante raro (o coelho).
+
+**O que isso significa para o test_private.** Pelo enunciado, o split
+separa câmera-noite, mas a mesma câmera pode aparecer em conjuntos diferentes
+em noites diferentes. O test_private provavelmente repete câmeras do train,
+como o test_public, então o atalho deve continuar ajudando mais do que
+atrapalha, e esperamos um F1 parecido com o do test_public. Numa câmera nova
+(como a do Uruguai da pergunta da capivara), o desempenho nos animais pequenos
+deve cair bastante. Seria a primeira coisa a medir com mais tempo, por exemplo
+deixando câmeras inteiras de fora na validação.

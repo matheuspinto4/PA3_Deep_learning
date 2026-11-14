@@ -8,3 +8,5 @@ checkpoints/
 *.tmp
 outputs_colab.zip
 outputs/final_model/
+outputs/final_retrain/
+weights/modelo_retreinado.pt

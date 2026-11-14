@@ -16,6 +16,7 @@ Em todas, as imagens rotuladas do orçamento entram com o rótulo verdadeiro
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -70,13 +71,17 @@ def build_targets(variant: str, budget: int) -> tuple[list[str], np.ndarray, np.
 RUNS_DIR = OUTPUTS_DIR / "part1" / "students"
 
 
-def train_student(variant: str, budget: int = 5, seed: int = 0, verbose: bool = True) -> dict:
-    """Treina um aluno (ou, se a rodada já existe em disco, só a lê)."""
+def train_student(variant: str, budget: int = 5, seed: int = 0, verbose: bool = True,
+                  runs_dir: Path = RUNS_DIR, ckpt_dir: Path = CKPT_DIR / "student") -> dict:
+    """Treina um aluno (ou, se a rodada já existe em `runs_dir`, só a lê).
+
+    `runs_dir`/`ckpt_dir` diferentes dos padrões servem para retreinar sem
+    tocar nos resultados versionados (scripts/train_final.py)."""
     tag = f"{variant}_b{budget}_s{seed}"
-    if (RUNS_DIR / f"{tag}.json").exists() and (RUNS_DIR / f"{tag}_test_logits.npy").exists():
+    if (runs_dir / f"{tag}.json").exists() and (runs_dir / f"{tag}_test_logits.npy").exists():
         if verbose:
             print(f"[aluno {tag}] já treinado, lendo {tag}.json", flush=True)
-        return json.loads((RUNS_DIR / f"{tag}.json").read_text())
+        return json.loads((runs_dir / f"{tag}.json").read_text())
     r = RECIPE
     set_seed(seed)
     ids, targets, weights = build_targets(variant, budget)
@@ -93,15 +98,15 @@ def train_student(variant: str, budget: int = 5, seed: int = 0, verbose: bool = 
         sample_weights=weights,
         log_prefix=f"[aluno {variant} b{budget} s{seed}] ",
         verbose=verbose,
-        checkpoint_path=CKPT_DIR / "student" / f"{variant}_b{budget}_s{seed}_last.pt",
+        checkpoint_path=ckpt_dir / f"{variant}_b{budget}_s{seed}_last.pt",
     )
     model.load_state_dict(out["best_state"])
     test_ds = eval_dataset("test_public")
     logits = predict_logits(model, test_ds)
     test = evaluate(model, test_ds)
 
-    (CKPT_DIR / "student").mkdir(parents=True, exist_ok=True)
-    torch.save(out["best_state"], CKPT_DIR / "student" / f"{tag}.pt")
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    torch.save(out["best_state"], ckpt_dir / f"{tag}.pt")
     result = {
         "variant": variant,
         "budget": budget,
@@ -115,7 +120,7 @@ def train_student(variant: str, budget: int = 5, seed: int = 0, verbose: bool = 
         "test_f1_per_class": test["f1_per_class"],
         "history": out["history"],
     }
-    RUNS_DIR.mkdir(parents=True, exist_ok=True)
-    (RUNS_DIR / f"{tag}.json").write_text(json.dumps(result, indent=2))
-    np.save(RUNS_DIR / f"{tag}_test_logits.npy", logits)
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    (runs_dir / f"{tag}.json").write_text(json.dumps(result, indent=2))
+    np.save(runs_dir / f"{tag}_test_logits.npy", logits)
     return result

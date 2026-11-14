@@ -1,5 +1,7 @@
 # AI_LOG
 
+**Matheus Pinto e Beatriz Marques**
+
 Registro de como usamos IA (Claude Code) ao longo do PA3. Atualizado
 conforme avançamos pelas partes do enunciado.
 

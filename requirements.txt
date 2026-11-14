@@ -5,4 +5,4 @@ scikit-learn==1.6.1
 matplotlib==3.9.2
 Pillow==11.0.0
 open_clip_torch==4.2.1   # professor (BioCLIP 2), Parte 1
-ultralytics              # MegaDetector V6, Parte 1 (rodado no Colab)
+ultralytics==8.4.206      # MegaDetector V6, Parte 1 (rodado no Colab)

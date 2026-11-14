@@ -106,6 +106,23 @@ def _letterbox(img: Image.Image) -> Image.Image:
     return canvas
 
 
+def _side_square(img: Image.Image, side: str) -> Image.Image:
+    """O quadrado encostado na lateral esquerda ou direita da foto (o que o
+    center crop joga fora fica dentro de um dos dois)."""
+    w, h = img.size
+    s = min(w, h)
+    x0 = 0 if side == "left" else w - s
+    return img.crop((x0, (h - s) // 2, x0 + s, (h - s) // 2 + s))
+
+
+def _view(img: Image.Image, view: str) -> Image.Image:
+    if view == "letterbox":
+        return _letterbox(img)
+    if view in ("left", "right"):
+        return _side_square(img, view)
+    return img
+
+
 @torch.no_grad()
 def encode_images(model, preprocess, ids: list[str], split: str, view: str = "center", batch_size: int = 32, log_every: int = 20) -> np.ndarray:
     """Embeddings normalizados das imagens originais (512px, não o cache).
@@ -113,13 +130,14 @@ def encode_images(model, preprocess, ids: list[str], split: str, view: str = "ce
     view="center": pré-processamento padrão do CLIP (lado menor 224 + center
     crop) -- joga fora as laterais da foto.
     view="letterbox": a foto inteira, com faixas cinza para ficar quadrada.
+    view="left"/"right": o quadrado da lateral esquerda/direita (multi-crop).
     """
     feats = []
     for b in range(0, len(ids), batch_size):
         imgs = []
         for iid in ids[b : b + batch_size]:
             img = Image.open(IMAGES_DIR / split / f"{iid}.jpg").convert("RGB")
-            imgs.append(preprocess(_letterbox(img) if view == "letterbox" else img))
+            imgs.append(preprocess(_view(img, view)))
         feats.append(F.normalize(model.encode_image(torch.stack(imgs)), dim=-1))
         if log_every and (b // batch_size) % log_every == 0:
             print(f"  {split}/{view}: {b + len(imgs)}/{len(ids)}", flush=True)
