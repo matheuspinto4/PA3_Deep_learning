@@ -9,6 +9,7 @@ Variantes (uma ablação dos tratamentos de ruído, um de cada vez):
                  temperatura calibrada nos rótulos do orçamento)
   soft_improved_tauXX  idem, descartando as imagens em que a confiança do
                  professor é < XX% (filtro por confiança; τ escolhido no val)
+  soft_improved_mc[_tauXX]  idem, com o professor multi-crop (3 recortes)
 Em todas, as imagens rotuladas do orçamento entram com o rótulo verdadeiro
 (e peso maior), no lugar do pseudo-rótulo.
 """
@@ -35,6 +36,12 @@ VARIANTS = {
     "soft_improved_tau30": dict(teacher="improved", soft=True, tau=0.3),
     "soft_improved_tau50": dict(teacher="improved", soft=True, tau=0.5),
     "soft_improved_tau70": dict(teacher="improved", soft=True, tau=0.7),
+    # professor multi-crop (3 recortes; scripts/part1_teacher_multicrop.py). A
+    # vista mais confiante tende a ter confiança alta, por isso também τ=0,9.
+    "soft_improved_mc": dict(teacher="improved_mc", soft=True, tau=0.0),
+    "soft_improved_mc_tau50": dict(teacher="improved_mc", soft=True, tau=0.5),
+    "soft_improved_mc_tau70": dict(teacher="improved_mc", soft=True, tau=0.7),
+    "soft_improved_mc_tau90": dict(teacher="improved_mc", soft=True, tau=0.9),
 }
 
 # Pseudo-rótulos versionados no git (gerados por scripts/part1_teacher.py):

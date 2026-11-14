@@ -58,10 +58,13 @@ def main():
         "piso (b)": np.load(OUTPUTS_DIR / "floor_runs" / "resnet18_b5_s0_test_logits.npy").argmax(1),
         "professor zero-shot": np.load(OUT / "teacher_test_probs_zs.npy").argmax(1),
         "professor melhorado": np.load(OUT / "teacher_test_probs_improved_b5.npy").argmax(1),
+        "professor 3 recortes": np.load(OUT / "teacher_test_probs_improved_mc_b5.npy").argmax(1),
         "aluno": np.load(OUT / "students" / f"{chosen}_b5_s0_test_logits.npy").argmax(1),
     }
-    colors = {"piso (b)": (COLORS["floor"], 1.0), "professor zero-shot": (COLORS["teacher"], 0.55),
-              "professor melhorado": (COLORS["teacher"], 1.0), "aluno": (COLORS["student"], 1.0)}
+    # (cor, transparência, hachura): os 3 professores na mesma cor, separados por tom e hachura
+    colors = {"piso (b)": (COLORS["floor"], 1.0, None), "professor zero-shot": (COLORS["teacher"], 0.55, None),
+              "professor melhorado": (COLORS["teacher"], 1.0, None), "professor 3 recortes": (COLORS["teacher"], 1.0, "///"),
+              "aluno": (COLORS["student"], 1.0, None)}
 
     groups = [(lo, hi, lbl, (area >= lo) & (area < hi)) for lo, hi, lbl in BINS] + [(None, None, "sem detecção", np.isnan(area))]
     res = {"md_conf": MD_CONF, "student": chosen, "fraction_below_2pct": float(np.nanmean(area < 0.02)),
@@ -76,13 +79,14 @@ def main():
     res["center_crop"] = {lbl: {"n": int(m.sum()), "accuracy": {k: float((p[m] == y[m]).mean()) for k, p in preds.items()}}
                           for lbl, m in (("animal na borda", edge), ("animal no centro", center))}
 
-    fig, (ax1, ax3, ax2) = plt.subplots(1, 3, figsize=(21, 5.6), gridspec_kw={"width_ratios": [1.6, 0.9, 1], "wspace": 0.25})
-    w = 0.8 / len(preds)
+    fig, (ax1, ax3, ax2) = plt.subplots(1, 3, figsize=(24, 5.8), gridspec_kw={"width_ratios": [1.7, 0.9, 1], "wspace": 0.22})
+    w = 0.85 / len(preds)
     for j, (name, p) in enumerate(preds.items()):
         vals = [res["bins"][g[2]]["accuracy"][name] for g in groups]
-        c, a = colors[name]
-        bars = ax1.bar(np.arange(len(groups)) + (j - (len(preds) - 1) / 2) * w, vals, w * 0.92, color=c, alpha=a, label=name)
-        ax1.bar_label(bars, fmt="%.2f", fontsize=7.5, padding=2)
+        c, a, h = colors[name]
+        bars = ax1.bar(np.arange(len(groups)) + (j - (len(preds) - 1) / 2) * w, vals, w * 0.92, color=c, alpha=a,
+                       hatch=h, edgecolor="white" if h else None, label=name)
+        ax1.bar_label(bars, fmt="%.2f", fontsize=6.5, padding=2)
     ax1.set_xticks(range(len(groups)), [f"{g[2]}\nn={res['bins'][g[2]]['n']}\n{res['bins'][g[2]]['frac_night']:.0%} noite" for g in groups])
     ax1.set_xlabel("área do animal no quadro (caixa do MegaDetector)")
     ax1.set_ylim(0, 1)
@@ -92,15 +96,16 @@ def main():
     ax1.grid(axis="x", visible=False)
 
     cc = res["center_crop"]
-    w3 = 0.8 / len(preds)
+    w3 = 0.85 / len(preds)
     for j, name in enumerate(preds):
-        c, a = colors[name]
-        bars = ax3.bar(np.arange(2) + (j - (len(preds) - 1) / 2) * w3, [cc[g]["accuracy"][name] for g in cc], w3 * 0.92, color=c, alpha=a)
-        ax3.bar_label(bars, fmt="%.2f", fontsize=7.5, padding=2)
+        c, a, h = colors[name]
+        bars = ax3.bar(np.arange(2) + (j - (len(preds) - 1) / 2) * w3, [cc[g]["accuracy"][name] for g in cc], w3 * 0.92, color=c, alpha=a,
+                       hatch=h, edgecolor="white" if h else None)
+        ax3.bar_label(bars, fmt="%.2f", fontsize=6.5, padding=2)
     ax3.set_xticks(range(2), [f"{g}\nn={cc[g]['n']}" for g in cc])
     ax3.set_xlabel("≥50% da caixa fora do center crop do professor?")
     ax3.set_ylim(0, 1)
-    ax3.set_title("O professor só vê o centro")
+    ax3.set_title("Center crop vs. 3 recortes")
     ax3.grid(axis="x", visible=False)
 
     pw = [res["bins"][g[2]]["teacher_zs_pred_woodchuck"] for g in groups]

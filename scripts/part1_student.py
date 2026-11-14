@@ -1,7 +1,8 @@
 """Parte 1, Trilha C — o aluno (ResNet-18) treinado nos pseudo-rótulos.
 
-Treina as 6 variantes de pseudo-rótulo (ver pa3/student.py) no orçamento de 5
-por classe, seed 0, escolhe a melhor PELO VAL, e compara com o professor e com
+Treina as variantes de pseudo-rótulo (ver pa3/student.py: 6 com o professor
+de center crop, 4 com o professor multi-crop) no orçamento de 5 por classe,
+seed 0, escolhe a melhor PELO VAL, e compara com o professor e com
 o piso: em quais classes o aluno supera o professor?
 
 Retomável: variantes já treinadas (json em outputs/part1/students/) são lidas
@@ -10,7 +11,7 @@ Pressupõe os resultados de `part0_floor.py` e `part1_teacher.py` em outputs/
 (versionados no git, então roda direto num clone, ex.: no Colab).
 
 Saídas em outputs/part1/:
-  07_alunos_variantes.png          F1 val / test das 6 variantes + referências
+  07_alunos_variantes.png          F1 val / test das variantes + referências
   08_aluno_vs_professor_classe.png ganho por classe do aluno sobre o professor
   09_noite_vs_dia_todos.png        piso, professor e aluno, dia vs. noite
   10_matriz_confusao_aluno.png     matriz de confusão do aluno escolhido
@@ -40,10 +41,20 @@ LABELS = {
     "hard_zs": "duro\nzero-shot\n(sem tratamento)",
     "hard_improved": "duro\nprof. melhorado",
     "soft_improved": "suave\nprof. melhorado",
-    "soft_improved_tau30": "suave + filtro\nτ=0,3 (87%)",
-    "soft_improved_tau50": "suave + filtro\nτ=0,5 (69%)",
-    "soft_improved_tau70": "suave + filtro\nτ=0,7 (58%)",
+    "soft_improved_tau30": "suave + filtro\nτ=0,3",
+    "soft_improved_tau50": "suave + filtro\nτ=0,5",
+    "soft_improved_tau70": "suave + filtro\nτ=0,7",
+    "soft_improved_mc": "3 recortes\nsuave",
+    "soft_improved_mc_tau50": "3 recortes\nτ=0,5",
+    "soft_improved_mc_tau70": "3 recortes\nτ=0,7",
+    "soft_improved_mc_tau90": "3 recortes\nτ=0,9",
 }
+N_TRAIN = 6505
+
+
+def label(v: str, r: dict) -> str:
+    """Rótulo do eixo: com filtro, mostra a fração do train que sobrou."""
+    return LABELS[v] + (f" ({r['n_train'] / N_TRAIN:.0%})" if VARIANTS[v]["tau"] > 0 else "")
 
 
 def get_student(variant: str) -> dict:
@@ -72,9 +83,11 @@ def main():
     teacher = json.loads((OUT / "teacher_results.json").read_text())
     floor = json.loads((OUTPUTS_DIR / "part0" / "results.json").read_text())["resnet18"]
     t_zs, t_imp = teacher["teacher_zs"], teacher["teacher_improved_b5"]
+    t_mc = json.loads((OUT / "teacher_multicrop.json").read_text())["teacher_improved_mc_b5"]
+    teachers = {"zs": t_zs, "improved": t_imp, "improved_mc": t_mc}
 
     # --- 07: as variantes ------------------------------------------------------
-    fig, ax = plt.subplots(figsize=(15, 5.6))
+    fig, ax = plt.subplots(figsize=(max(15, 1.9 * len(VARIANTS)), 5.8))
     xs = np.arange(len(VARIANTS))
     for k, (key, lbl, alpha) in enumerate((("best_val_f1", "F1 val (seleção)", 0.5), ("test_f1_macro", "F1 test_public", 1.0))):
         vals = [students[v][key] for v in VARIANTS]
@@ -84,11 +97,12 @@ def main():
         (floor["test_f1_macro"], f"piso (b) {floor['test_f1_macro']:.3f}", COLORS["floor"], "--"),
         (t_zs["f1_macro"], f"professor zero-shot {t_zs['f1_macro']:.3f}", COLORS["teacher"], "--"),
         (t_imp["f1_macro"], f"professor melhorado {t_imp['f1_macro']:.3f}", COLORS["teacher"], ":"),
+        (t_mc["f1_macro"], f"professor 3 recortes {t_mc['f1_macro']:.3f}", COLORS["teacher"], "-."),
         (CEILING_F1, f"teto {CEILING_F1}", COLORS["ceiling"], "--"),
     ]
     for y, lbl, c, ls in refs:
         ax.axhline(y, color=c, ls=ls, lw=1.3, label=lbl)  # na legenda: teto e professor melhorado quase coincidem
-    ax.set_xticks(xs, [LABELS[v] + ("\n✓ escolhido no val" if v == chosen else "") for v in VARIANTS], fontsize=9)
+    ax.set_xticks(xs, [label(v, students[v]) + ("\n✓ escolhido no val" if v == chosen else "") for v in VARIANTS], fontsize=9)
     ax.set_xlim(-0.6, len(VARIANTS) - 0.4)
     ax.set_ylim(0, 1)
     ax.set_ylabel("F1 macro")
@@ -100,7 +114,7 @@ def main():
 
     # --- 08: aluno vs professor por classe ------------------------------------
     s = students[chosen]
-    teacher_used = t_imp if VARIANTS[chosen]["teacher"] == "improved" else t_zs
+    teacher_used = teachers[VARIANTS[chosen]["teacher"]]
     f_s, f_t, f_f = (np.array(x) for x in (s["test_f1_per_class"], teacher_used["f1_per_class"], floor["test_f1_per_class"]))
     order = np.argsort(f_s - f_t)
     y = np.arange(len(CLASSES))
@@ -166,7 +180,8 @@ def main():
     for v in VARIANTS:
         r = students[v]
         print(f"| {v}{' (escolhido)' if v == chosen else ''} | {r.get('n_train', '-')} | {r['best_epoch']} | {r['best_val_f1']:.3f} | {r['test_f1_macro']:.3f} | {r['test_accuracy']:.3f} |")
-    print(f"\nreferências: piso {floor['test_f1_macro']:.3f} | professor zs {t_zs['f1_macro']:.3f} | professor melhorado {t_imp['f1_macro']:.3f} | teto {CEILING_F1}")
+    print(f"\nreferências: piso {floor['test_f1_macro']:.3f} | professor zs {t_zs['f1_macro']:.3f} | professor melhorado {t_imp['f1_macro']:.3f} | "
+          f"professor 3 recortes {t_mc['f1_macro']:.3f} | teto {CEILING_F1}")
     print("aluno - professor por classe:", {c: round(v, 3) for c, v in sorted(summary["per_class_student_minus_teacher"].items(), key=lambda kv: -kv[1])})
 
 

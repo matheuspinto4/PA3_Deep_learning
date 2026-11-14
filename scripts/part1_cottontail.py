@@ -11,12 +11,11 @@ Duas hipóteses, testadas com vizinhos mais próximos no train:
    fundo) têm outros animais, e a CNN aprende "esta câmera = gato".
 
 As câmeras do teste são agrupadas pela própria correlação em pixels. Os
-vizinhos usam os pseudo-rótulos do professor melhorado (orçamento 5) que
-passaram no filtro τ=0,7, ou seja, exatamente o que o aluno viu no treino.
+vizinhos usam os pseudo-rótulos do professor do aluno escolhido (orçamento 5)
+que passaram no filtro dele, ou seja, exatamente o que o aluno viu no treino.
 Diagnóstico no test_public, nada é selecionado aqui.
 
-Pressupõe os embeddings do professor (scripts/part1_teacher.py; se não
-estiverem em cache/teacher/, são recalculados, o que exige o BioCLIP 2).
+Usa os embeddings do professor versionados em outputs/part1/teacher_embeddings/.
 
 Saídas em outputs/part1/: 12_coelho_atalho_de_camera.png, cottontail_results.json
 """
@@ -36,12 +35,11 @@ import numpy as np
 from pa3.config import CLASSES, OUTPUTS_DIR
 from pa3.data import budget_labels, get_cache, is_night, split_labels
 from pa3.plotting import COLORS, INK_MUTED, plt
-from pa3.student import load_pseudo_labels
+from pa3.student import VARIANTS, load_pseudo_labels
 from pa3.teacher import cached_embeddings
 
 OUT = OUTPUTS_DIR / "part1"
 TARGET = "eastern_cottontail"
-TAU = 0.7          # filtro do aluno escolhido
 K = 10             # vizinhos no BioCLIP por imagem
 CAMERA_SIM = 0.95  # correlação em pixels para agrupar coelhos do teste na mesma câmera
 TRAIN_SIM = 0.93   # e para achar fotos do train da mesma câmera (conferido a olho: acima disso é a mesma cena)
@@ -88,10 +86,13 @@ def main():
     te_cache, tr_cache = get_cache("test_public"), get_cache("train")
 
     chosen = json.loads((OUT / "student_results.json").read_text())["chosen"]
+    cfg = VARIANTS[chosen]  # o professor e o filtro do aluno escolhido
+    teacher_probs = {"zs": "teacher_test_probs_zs.npy", "improved": "teacher_test_probs_improved_b5.npy",
+                     "improved_mc": "teacher_test_probs_improved_mc_b5.npy"}[cfg["teacher"]]
     preds = {
         "piso b5": np.load(OUTPUTS_DIR / "floor_runs" / "resnet18_b5_s0_test_logits.npy").argmax(1),
         "piso b20": np.load(OUTPUTS_DIR / "floor_runs" / "resnet18_b20_s0_test_logits.npy").argmax(1),
-        "professor melhorado": np.load(OUT / "teacher_test_probs_improved_b5.npy").argmax(1),
+        "professor do aluno": np.load(OUT / teacher_probs).argmax(1),
         "aluno b5": np.load(OUT / "students" / f"{chosen}_b5_s0_test_logits.npy").argmax(1),
         "aluno b20": np.load(OUT / "students" / f"{chosen}_b20_s0_test_logits.npy").argmax(1),
     }
@@ -101,7 +102,8 @@ def main():
            "recall": {k: float((p[qmask] == ct).mean()) for k, p in preds.items()}}
 
     # pseudo-rótulos que o aluno viu
-    pids, P = load_pseudo_labels("improved", 5)
+    TAU = cfg["tau"]
+    pids, P = load_pseudo_labels(cfg["teacher"], 5)
     pidx = {i: k for k, i in enumerate(pids)}
     parg, pconf = P.argmax(1), P.max(1)
     kept = pconf >= TAU

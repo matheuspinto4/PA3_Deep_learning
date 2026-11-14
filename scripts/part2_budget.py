@@ -4,7 +4,8 @@ Piso (Parte 0b) e o método da Trilha C (o aluno escolhido no val na Parte 1)
 com 1, 5 e 20 rótulos por classe. Nos orçamentos de 5 e 20, 3 seeds (média ±
 desvio); no de 1, 1 seed. O professor entra como referência: o zero-shot não usa
 rótulo nenhum (linha horizontal), e o professor melhorado usa os rótulos do
-orçamento (um ponto por orçamento; determinístico, sem seed).
+orçamento (um ponto por orçamento; determinístico, sem seed), com center crop e
+com 3 recortes (outputs/part1/teacher_multicrop.json).
 
 Toda rodada é retomável (ver pa3/floor.py e pa3/student.py): rodar de novo só
 treina o que falta. Pressupõe outputs/part1/student_results.json (Parte 1).
@@ -60,6 +61,10 @@ def teacher_rows() -> list[dict]:
         b = t[f"budget_{budget}"]
         rows.append(dict(metodo="professor melhorado", orcamento=budget, seed="-", f1_macro=b["improved_test_f1_macro"],
                          acuracia=b["improved_test_accuracy"]))
+        # professor multi-crop (scripts/part1_teacher_multicrop.py), com a combinação escolhida nos 105 rótulos
+        mc = json.loads((OUTPUTS_DIR / "part1" / "teacher_multicrop.json").read_text())
+        r = mc["budgets"][str(budget)]["test_public"][mc["chosen"]]
+        rows.append(dict(metodo="professor 3 recortes", orcamento=budget, seed="-", f1_macro=r["f1_macro"], acuracia=r["accuracy"]))
     return rows
 
 
@@ -79,13 +84,14 @@ def plot_curve(summary: dict, method_label: str, path: Path) -> None:
     styles = [
         ("piso", "piso (ResNet-18, só rótulos)", COLORS["floor"], "o", "-"),
         (method_label, "aluno (Trilha C)", COLORS["student"], "o", "-"),
-        ("professor melhorado", "professor melhorado (BioCLIP 2 + rótulos)", COLORS["teacher"], "s", "--"),
+        ("professor melhorado", "professor melhorado (BioCLIP 2 + rótulos, center crop)", COLORS["teacher"], "s", "--"),
+        ("professor 3 recortes", "professor melhorado, 3 recortes", COLORS["teacher"], "D", "-."),
     ]
     # referências na legenda (não em texto solto): a faixa 0,6-0,75 fica cheia
     zs = summary["professor zero-shot"][BUDGETS[0]]["f1_mean"]
     ax.axhline(CEILING_F1, color=COLORS["ceiling"], ls="--", lw=1.5, label=f"teto: todos os rótulos do train ({CEILING_F1})")
     ax.axhline(zs, color=COLORS["teacher"], ls=":", lw=1.5, label=f"professor zero-shot, 0 rótulos ({zs:.3f})")
-    offsets = {"piso": (10, -14), "professor melhorado": (10, 8)}
+    offsets = {"piso": (10, -14), "professor melhorado": (10, -14), "professor 3 recortes": (10, 8)}
     # pontos que caem perto de outro em algum orçamento: rótulo para baixo/cima
     point_offsets = {(method_label, 5): (10, -16), (method_label, 20): (10, -16), ("piso", 20): (10, 6)}
     for key, lbl, c, mk, ls in styles:
@@ -155,16 +161,19 @@ def main():
             for r in rows:
                 w.writerow([r["metodo"], r["orcamento"], r["seed"], f"{r['f1_macro']:.4f}", f"{r['acuracia']:.4f}"])
 
-    summary = {m: summarize(rows, m) for m in ("piso", method_label, "professor zero-shot", "professor melhorado")}
+    summary = {m: summarize(rows, m) for m in ("piso", method_label, "professor zero-shot", "professor melhorado", "professor 3 recortes")}
     plot_curve(summary, method_label, OUT / "01_curva_orcamento.png")
     gain = plot_gain(rows, method_label, OUT / "02_ganho_por_classe_b5.png")
     (OUT / "results.json").write_text(json.dumps({"method": method, "summary": {k: {str(b): v for b, v in s.items()} for k, s in summary.items()},
                                                   "gain_per_class_b5": gain, "rows": rows}, indent=2))
 
-    print("\n| método | 1/classe | 5/classe (3 seeds) | 20/classe |\n|---|---|---|---|")
-    for m in ("piso", method_label, "professor melhorado", "professor zero-shot"):
+    def cell(s, b):
+        return f"{s[b]['f1_mean']:.3f}" + (f" ± {s[b]['f1_std']:.3f}" if s[b]["n_seeds"] > 1 else "")
+
+    print("\n| método | 1/classe | 5/classe (3 seeds) | 20/classe (3 seeds) |\n|---|---|---|---|")
+    for m in ("piso", method_label, "professor 3 recortes", "professor melhorado", "professor zero-shot"):
         s = summary[m]
-        print(f"| {m} | {s[1]['f1_mean']:.3f} | {s[5]['f1_mean']:.3f}" + (f" ± {s[5]['f1_std']:.3f}" if s[5]["n_seeds"] > 1 else "") + f" | {s[20]['f1_mean']:.3f} |")
+        print(f"| {m} | {cell(s, 1)} | {cell(s, 5)} | {cell(s, 20)} |")
     print(f"| teto | | {CEILING_F1} | |")
     print("\nganho por classe (b5):", dict(sorted(gain.items(), key=lambda kv: -kv[1])))
 

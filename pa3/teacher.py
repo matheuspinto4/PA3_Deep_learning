@@ -18,7 +18,7 @@ import torch
 import torch.nn.functional as F
 from PIL import Image
 
-from pa3.config import CACHE_DIR, CLASSES, IMAGES_DIR
+from pa3.config import CACHE_DIR, CLASSES, DEVICE, IMAGES_DIR, OUTPUTS_DIR
 
 TEACHERS = {
     "clip_b32": dict(model_name="ViT-B-32", pretrained="openai"),
@@ -83,8 +83,12 @@ def load_teacher(name: str):
 
     model, _, preprocess = open_clip.create_model_and_transforms(**TEACHERS[name])
     tokenizer = open_clip.get_tokenizer(TEACHERS[name]["model_name"])
-    model.eval()
+    model.eval().to(DEVICE)  # GPU no Colab; em CPU, nada muda
     return model, preprocess, tokenizer
+
+
+def _device(model) -> torch.device:
+    return next(model.parameters()).device
 
 
 @torch.no_grad()
@@ -92,9 +96,9 @@ def text_classifier(model, tokenizer, prompt_set: str) -> np.ndarray:
     """(C, D): um vetor de texto normalizado por classe (média dos templates)."""
     rows = []
     for prompts in class_prompts(prompt_set):
-        e = F.normalize(model.encode_text(tokenizer(prompts)), dim=-1).mean(0)
+        e = F.normalize(model.encode_text(tokenizer(prompts).to(_device(model))), dim=-1).mean(0)
         rows.append(F.normalize(e, dim=0))
-    return torch.stack(rows).numpy()
+    return torch.stack(rows).float().cpu().numpy()
 
 
 def _letterbox(img: Image.Image) -> Image.Image:
@@ -138,7 +142,7 @@ def encode_images(model, preprocess, ids: list[str], split: str, view: str = "ce
         for iid in ids[b : b + batch_size]:
             img = Image.open(IMAGES_DIR / split / f"{iid}.jpg").convert("RGB")
             imgs.append(preprocess(_view(img, view)))
-        feats.append(F.normalize(model.encode_image(torch.stack(imgs)), dim=-1))
+        feats.append(F.normalize(model.encode_image(torch.stack(imgs).to(_device(model))), dim=-1).float().cpu())
         if log_every and (b // batch_size) % log_every == 0:
             print(f"  {split}/{view}: {b + len(imgs)}/{len(ids)}", flush=True)
     return torch.cat(feats).numpy()
@@ -150,10 +154,18 @@ def embedding_path(teacher: str, view: str, split: str):
     return d / f"{teacher}_{view}_{split}.npz"
 
 
+# Cópias versionadas dos embeddings já calculados em CPU (BioCLIP 2): quem
+# clona o repositório (ex.: o Colab) usa exatamente os mesmos números, em vez
+# de recalcular em outro hardware.
+VERSIONED_EMB_DIR = OUTPUTS_DIR / "part1" / "teacher_embeddings"
+
+
 def cached_embeddings(teacher: str, view: str, split: str, ids: list[str] | None = None, model_bundle=None) -> tuple[list[str], np.ndarray]:
     """Embeddings de um split inteiro (ou de `ids`), calculados na 1ª chamada."""
     assert split in ("train", "test_public"), "o professor nunca olha o val"
     path = embedding_path(teacher, view, split)
+    if not path.exists() and (VERSIONED_EMB_DIR / path.name).exists():
+        path = VERSIONED_EMB_DIR / path.name
     if path.exists():
         z = np.load(path)
         all_ids, emb = list(z["ids"]), z["emb"]
