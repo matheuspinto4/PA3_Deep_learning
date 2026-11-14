@@ -1,8 +1,8 @@
 """Parte 2 — A curva de orçamento.
 
 Piso (Parte 0b) e o método da Trilha C (o aluno escolhido no val na Parte 1)
-com 1, 5 e 20 rótulos por classe. No orçamento de 5, 3 seeds (média ± desvio);
-nos outros, 1 seed. O professor entra como referência: o zero-shot não usa
+com 1, 5 e 20 rótulos por classe. Nos orçamentos de 5 e 20, 3 seeds (média ±
+desvio); no de 1, 1 seed. O professor entra como referência: o zero-shot não usa
 rótulo nenhum (linha horizontal), e o professor melhorado usa os rótulos do
 orçamento (um ponto por orçamento; determinístico, sem seed).
 
@@ -35,7 +35,7 @@ from pa3.plotting import COLORS, INK_MUTED, plt
 from pa3.student import train_student
 
 OUT = OUTPUTS_DIR / "part2"
-SEEDS = {1: [0], 5: [0, 1, 2], 20: [0]}
+SEEDS = {1: [0], 5: [0, 1, 2], 20: [0, 1, 2]}  # b20: seeds 1 e 2 acrescentadas porque a seed 0 escolheu a época 2 (pico de ruído no val)
 
 
 def run_all(method: str) -> list[dict]:

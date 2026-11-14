@@ -300,6 +300,27 @@ Três razões, medidas com as caixas do MegaDetector:
    desse quadrado. **Nelas o professor acerta 21–26% e o aluno, 71%.** No
    centro, os dois empatam (0,76 vs. 0,74). A entrada 224×320 sem crop foi
    decidida na Parte 0 por esse motivo, e aqui ela rende.
+
+   **Essa vantagem é, em boa parte, uma limitação do nosso professor**, e não
+   algo que o aluno tenha descoberto sozinho. Testamos depois um professor
+   **multi-crop** (`scripts/part1_teacher_multicrop.py`): o mesmo BioCLIP 2,
+   com os mesmos protótipos, aplicado aos quadrados esquerdo, central e
+   direito da foto. A forma de combinar as 3 vistas foi escolhida nos 105
+   rótulos: a vista mais confiante, `max_conf`, deu F1 de 0,762 em
+   leave-one-out, contra 0,650 do center crop. No test_public, só reportado:
+
+   | professor melhorado | F1 test | acurácia | acerto com animal na borda (n=117) |
+   |---|---|---|---|
+   | center crop (gerou os pseudo-rótulos) | 0,682 | 0,681 | 26% |
+   | **3 recortes, vista mais confiante** | **0,788** | **0,792** | **68%** |
+   | aluno (referência) | 0,683 | 0,736 | 71% |
+
+   O professor multi-crop passa o teto (0,686) sem nenhum treino. **Não
+   refizemos os pseudo-rótulos nem o aluno com ele**, e o modelo entregue
+   continua sendo o da tabela acima. É o próximo passo óbvio: um professor de
+   0,79 deveria gerar um aluno melhor. A escolha do center crop foi feita nos
+   105 rótulos contra o letterbox, que perdia; os recortes laterais nunca
+   tinham sido comparados.
 2. **Ele herda a parte limpa do professor, não os vícios.** O woodchuck-ímã
    não passa para o aluno. O professor zero-shot prevê woodchuck 134 vezes e
    o melhorado 65; o aluno, 32 (são 22 de verdade). Essas previsões do

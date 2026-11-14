@@ -170,3 +170,25 @@ ajuste quando um resultado não fazia sentido ou não entendíamos uma escolha.
   câmeras, e dentro de cada uma o aluno dá quase sempre a mesma resposta.
   Lição registrada: número citado na apresentação tem que sair de script
   versionado, não de código solto no terminal.
+
+### Revisão final (14/11)
+
+- **Revisão do projeto contra o enunciado.** Pedimos à IA uma revisão sem
+  alterações, item por item. Ela encontrou um problema real: o "comando que
+  treina" do README não funcionava num clone limpo, porque os resultados
+  versionados faziam o script pular o treino. Daí veio o
+  `scripts/train_final.py`, que treina em pasta separada. Ela também apontou
+  textos desatualizados (tempos de treino), afirmações sem medida (marcadas
+  agora como hipótese) e as perdas do aluno em bird, crow e bobcat sem
+  explicação. A explicação, medida em seguida, é que o filtro τ=0,7 mantém
+  93% dos corvos e só 40% dos passarinhos.
+- **O professor multi-crop.** Para preparar a pergunta "o aluno só ganha
+  porque o professor usa center crop?", medimos um professor com 3 recortes,
+  com a combinação escolhida nos 105 rótulos. Ele foi a 0,788 no
+  test_public, contra 0,682. A resposta honesta é que sim, em boa parte. Está
+  registrado no README como limitação e próximo passo. Não trocamos o
+  modelo entregue a dois dias da entrega sem passar por toda a cadeia
+  (pseudo-rótulos, alunos, curva de orçamento, galeria).
+- **Seeds extras com 20 rótulos.** O aluno com 20 rótulos tinha escolhido a
+  época 2 por um pico de ruído no val. Acrescentamos as seeds 1 e 2 para o
+  piso e o aluno nesse orçamento, rodadas no Colab, como as demais.

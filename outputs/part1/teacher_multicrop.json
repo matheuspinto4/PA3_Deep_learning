@@ -1,0 +1,63 @@
+{
+  "beta": 0.25,
+  "selection_105": {
+    "zero_shot": {
+      "center": 0.6014855514855515,
+      "media": 0.714228232085375,
+      "max_conf": 0.7244673937951249
+    },
+    "melhorado_loo": {
+      "center": 0.6498263174733763,
+      "media": 0.7339525553811269,
+      "max_conf": 0.7615218115218115
+    }
+  },
+  "chosen_on_105": "max_conf",
+  "n_edge": 117,
+  "test_public": {
+    "zero_shot": {
+      "center": {
+        "f1_macro": 0.6491859550455711,
+        "accuracy": 0.6276202219482121,
+        "accuracy_animal_na_borda": 0.21367521367521367,
+        "accuracy_animal_no_centro": 0.6974063400576369
+      },
+      "media": {
+        "f1_macro": 0.6920036282428473,
+        "accuracy": 0.6954377311960542,
+        "accuracy_animal_na_borda": 0.5470085470085471,
+        "accuracy_animal_no_centro": 0.7204610951008645
+      },
+      "max_conf": {
+        "f1_macro": 0.7053765992450485,
+        "accuracy": 0.7139334155363748,
+        "accuracy_animal_na_borda": 0.5726495726495726,
+        "accuracy_animal_no_centro": 0.7377521613832853
+      }
+    },
+    "melhorado": {
+      "center": {
+        "f1_macro": 0.6816663936299879,
+        "accuracy": 0.6806411837237978,
+        "accuracy_animal_na_borda": 0.2564102564102564,
+        "accuracy_animal_no_centro": 0.7521613832853026
+      },
+      "media": {
+        "f1_macro": 0.7887712170514957,
+        "accuracy": 0.7916152897657214,
+        "accuracy_animal_na_borda": 0.6581196581196581,
+        "accuracy_animal_no_centro": 0.8141210374639769
+      },
+      "max_conf": {
+        "f1_macro": 0.7880313479129154,
+        "accuracy": 0.7916152897657214,
+        "accuracy_animal_na_borda": 0.6752136752136753,
+        "accuracy_animal_no_centro": 0.8112391930835735
+      }
+    }
+  },
+  "aluno_referencia": {
+    "animal na borda": 0.7094017094017094,
+    "animal no centro": 0.7405159332321699
+  }
+}
