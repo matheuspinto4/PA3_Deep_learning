@@ -185,10 +185,37 @@ ajuste quando um resultado não fazia sentido ou não entendíamos uma escolha.
 - **O professor multi-crop.** Para preparar a pergunta "o aluno só ganha
   porque o professor usa center crop?", medimos um professor com 3 recortes,
   com a combinação escolhida nos 105 rótulos. Ele foi a 0,788 no
-  test_public, contra 0,682. A resposta honesta é que sim, em boa parte. Está
-  registrado no README como limitação e próximo passo. Não trocamos o
-  modelo entregue a dois dias da entrega sem passar por toda a cadeia
-  (pseudo-rótulos, alunos, curva de orçamento, galeria).
+  test_public, contra 0,682. A resposta honesta é que sim, em boa parte.
+- **Refazer a cadeia com o professor de 3 recortes.** Discutimos duas
+  opções: registrar o professor só como diagnóstico, ou refazer tudo com
+  ele. Escolhemos refazer: pseudo-rótulos nos 3 orçamentos, 4 alunos novos
+  competindo no val com os 6 antigos, a curva de orçamento e a galeria,
+  tudo no Colab. A IA adaptou os scripts e o notebook. Os embeddings do
+  BioCLIP 2 foram versionados para o Colab só calcular os recortes que
+  faltavam.
+- **Um notebook quebrado.** Na primeira tentativa, a célula do professor de 3
+  recortes tinha sido sobrescrita por uma edição da IA (inserir uma célula
+  mudou os índices das seguintes), e o aluno falhou sem os pseudo-rótulos
+  novos. Corrigido, e as células passaram a interromper o "Executar tudo"
+  quando um script falha, em vez de seguir com resultados velhos.
+- **O resultado contrariou a expectativa.** O professor subiu 0,106 de F1, e
+  o aluno não subiu: 0,655 ± 0,032 em 3 seeds, contra 0,668 ± 0,020 do aluno
+  antigo, ambos colados no teto da ResNet-18 (0,686). A regra (maior F1 de
+  val, seed 0) escolheu o aluno novo por 0,002, uma imagem do val, e ele tem
+  0,620 no teste, contra 0,683 do antigo. A IA levantou a alternativa
+  (escolher pela média de 3 seeds no val, que daria o antigo) e o problema
+  dela: a troca de regra viria depois de ver o teste. **Decidimos manter a
+  regra** e entregar o aluno novo, e documentar no README o que a
+  comparação ensina: o gargalo agora é o aluno, não o professor, e a seleção
+  com 202 imagens de val não distingue diferenças menores que a variação
+  entre seeds.
+- **O texto foi reescrito com os números novos.** Várias conclusões da
+  primeira rodada mudaram: a vantagem do aluno nas imagens com animal na
+  borda era do professor de center crop; o aluno não supera mais o
+  professor nos animais minúsculos; no coelho, nas câmeras C e D o aluno
+  segue os rótulos verdadeiros do orçamento daquela câmera (bobcat). A
+  galeria da Parte 3, refeita pela mesma regra, trouxe imagens novas, e a
+  tabela foi reescrita olhando cada figura.
 - **Seeds extras com 20 rótulos.** O aluno com 20 rótulos tinha escolhido a
   época 2 por um pico de ruído no val. Acrescentamos as seeds 1 e 2 para o
   piso e o aluno nesse orçamento, rodadas no Colab, como as demais.

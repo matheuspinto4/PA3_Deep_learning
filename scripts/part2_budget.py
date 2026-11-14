@@ -91,16 +91,18 @@ def plot_curve(summary: dict, method_label: str, path: Path) -> None:
     zs = summary["professor zero-shot"][BUDGETS[0]]["f1_mean"]
     ax.axhline(CEILING_F1, color=COLORS["ceiling"], ls="--", lw=1.5, label=f"teto: todos os rótulos do train ({CEILING_F1})")
     ax.axhline(zs, color=COLORS["teacher"], ls=":", lw=1.5, label=f"professor zero-shot, 0 rótulos ({zs:.3f})")
-    offsets = {"piso": (10, -14), "professor melhorado": (10, -14), "professor 3 recortes": (10, 8)}
-    # pontos que caem perto de outro em algum orçamento: rótulo para baixo/cima
-    point_offsets = {(method_label, 5): (10, -16), (method_label, 20): (10, -16), ("piso", 20): (10, 6)}
+    # professores acima do ponto, aluno abaixo (fica entre o professor e o piso); em b20 aluno e
+    # piso ficam a ~0,03 um do outro: aluno acima, piso abaixo
+    offsets = {"piso": (10, -14), "professor melhorado": (10, 6), "professor 3 recortes": (10, 8), method_label: (10, -16)}
+    point_offsets = {(method_label, 20): (10, 4), ("piso", 20): (10, -16)}
     for key, lbl, c, mk, ls in styles:
         m = np.array([summary[key][b]["f1_mean"] for b in BUDGETS])
         e = np.array([summary[key][b]["f1_std"] for b in BUDGETS])
         ax.errorbar(x, m, yerr=e, color=c, marker=mk, ms=8, ls=ls, lw=2, capsize=5, label=lbl, mec="white", mew=1.5, zorder=3)
         for xi, mi, b in zip(x, m, BUDGETS):
             txt = f"{mi:.3f}" + (f" ± {summary[key][b]['f1_std']:.3f}" if summary[key][b]["n_seeds"] > 1 else "")
-            ax.annotate(txt, (xi, mi), textcoords="offset points", xytext=point_offsets.get((key, b), offsets.get(key, (10, -3))), fontsize=8.5, color=c)
+            ax.annotate(txt, (xi, mi), textcoords="offset points", xytext=point_offsets.get((key, b), offsets.get(key, (10, -3))), fontsize=8.5, color=c,
+                        bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.85))
     ax.set_xscale("log")
     ax.set_xticks(x, [f"{b}/classe\n({b * NUM_CLASSES})" for b in BUDGETS])
     ax.minorticks_off()

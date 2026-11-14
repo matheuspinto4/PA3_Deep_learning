@@ -1,114 +1,114 @@
 {
   "n_with_animal_box": 776,
   "mean_mass_in_box": {
-    "acertos": 0.1904848254408299,
-    "erros": 0.14302598280452758
+    "acertos": 0.18244977558411937,
+    "erros": 0.13082862982473178
   },
   "mean_box_area": {
-    "acertos": 0.07188066831373531,
-    "erros": 0.06756750871080139
+    "acertos": 0.07477304213492829,
+    "erros": 0.06264637622854373
   },
   "pointing_game": {
-    "acertos": 0.4991243432574431,
-    "erros": 0.28292682926829266
+    "acertos": 0.4980694980694981,
+    "erros": 0.2751937984496124
   },
   "by_size": {
     "<2%|acertos": {
-      "n": 169,
-      "mass_in_box": 0.024979245162383774,
-      "pointing": 0.08875739644970414
+      "n": 140,
+      "mass_in_box": 0.026694829895028045,
+      "pointing": 0.10714285714285714
     },
     "<2%|erros": {
-      "n": 67,
-      "mass_in_box": 0.026772632027675186,
-      "pointing": 0.07462686567164178
+      "n": 96,
+      "mass_in_box": 0.02523022065239881,
+      "pointing": 0.07291666666666667
     },
     "2–5%|acertos": {
-      "n": 163,
-      "mass_in_box": 0.11003995113120489,
-      "pointing": 0.44785276073619634
+      "n": 152,
+      "mass_in_box": 0.10111017306457813,
+      "pointing": 0.45394736842105265
     },
     "2–5%|erros": {
-      "n": 52,
-      "mass_in_box": 0.06728898899298376,
-      "pointing": 0.15384615384615385
+      "n": 63,
+      "mass_in_box": 0.09508040330154703,
+      "pointing": 0.23809523809523808
     },
     "5–15%|acertos": {
-      "n": 163,
-      "mass_in_box": 0.26407877537507585,
-      "pointing": 0.7852760736196319
+      "n": 154,
+      "mass_in_box": 0.2431954241700942,
+      "pointing": 0.7597402597402597
     },
     "5–15%|erros": {
-      "n": 71,
-      "mass_in_box": 0.24447230287765245,
-      "pointing": 0.5352112676056338
+      "n": 80,
+      "mass_in_box": 0.21806500930106268,
+      "pointing": 0.475
     },
     "≥15%|acertos": {
-      "n": 76,
-      "mass_in_box": 0.5732104009703586,
-      "pointing": 0.9078947368421053
+      "n": 72,
+      "mass_in_box": 0.5270953602674935,
+      "pointing": 0.7916666666666666
     },
     "≥15%|erros": {
-      "n": 15,
-      "mass_in_box": 0.44466661314169564,
-      "pointing": 0.4666666666666667
+      "n": 19,
+      "mass_in_box": 0.41560100842463343,
+      "pointing": 0.5789473684210527
     }
   },
   "accuracy_by_size": {
-    "<2%": 0.7161016949152542,
-    "2–5%": 0.7581395348837209,
-    "5–15%": 0.6965811965811965,
-    "≥15%": 0.8351648351648352,
-    "sem detecção": 0.7428571428571429
+    "<2%": 0.5932203389830508,
+    "2–5%": 0.7069767441860465,
+    "5–15%": 0.6581196581196581,
+    "≥15%": 0.7912087912087912,
+    "sem detecção": 0.45714285714285713
   },
   "errors": [
     {
-      "image_id": "be25dd18dcc694af",
-      "true": "striped_skunk",
-      "pred": "american_black_bear",
-      "conf": 0.9633119106292725,
+      "image_id": "5eb4ff9728febe89",
+      "true": "chicken",
+      "pred": "eastern_gray_squirrel",
+      "conf": 0.9905875325202942,
       "top3": [
         [
-          "american_black_bear",
-          0.963
+          "eastern_gray_squirrel",
+          0.991
         ],
         [
-          "striped_skunk",
-          0.019
+          "chicken",
+          0.007
         ],
         [
-          "woodchuck",
-          0.012
+          "eastern_fox_squirrel",
+          0.002
         ]
       ],
-      "night": true,
+      "night": false,
       "n_animal_boxes": 1,
       "animal_px_wxh": [
-        126,
-        73
+        106,
+        65
       ],
-      "mass_in_box": 0.35256314277648926,
-      "box_area": 0.13111049107142858,
-      "peak_in_box": true,
-      "occlusion_mass_in_box": 0.080111061269684
+      "mass_in_box": 0.007759563159197569,
+      "box_area": 0.09612165178571429,
+      "peak_in_box": false,
+      "occlusion_mass_in_box": 0.002911449306469314
     },
     {
       "image_id": "fc633e1d6505a453",
       "true": "eastern_cottontail",
       "pred": "domestic_cat",
-      "conf": 0.7390823364257812,
+      "conf": 0.9302908778190613,
       "top3": [
         [
           "domestic_cat",
-          0.739
+          0.93
         ],
         [
           "virginia_opossum",
-          0.071
+          0.033
         ],
         [
-          "striped_skunk",
-          0.042
+          "eastern_cottontail",
+          0.012
         ]
       ],
       "night": true,
@@ -117,180 +117,150 @@
         16,
         15
       ],
-      "mass_in_box": 0.013021010905504227,
+      "mass_in_box": 0.009846454486250877,
       "box_area": 0.0035574776785714285,
       "peak_in_box": false,
-      "occlusion_mass_in_box": 0.0
+      "occlusion_mass_in_box": 0.0011048696248043227
     },
     {
-      "image_id": "4fa298343f5445de",
-      "true": "striped_skunk",
-      "pred": "grey_fox",
-      "conf": 0.5439000725746155,
+      "image_id": "498fab7e0e6a08aa",
+      "true": "bobcat",
+      "pred": "eastern_gray_squirrel",
+      "conf": 0.46342459321022034,
       "top3": [
         [
-          "grey_fox",
-          0.544
+          "eastern_gray_squirrel",
+          0.463
         ],
         [
-          "red_fox",
-          0.163
+          "bobcat",
+          0.177
         ],
         [
-          "striped_skunk",
-          0.145
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        91,
-        92
-      ],
-      "mass_in_box": 0.001305983867496252,
-      "box_area": 0.11806640625,
-      "peak_in_box": false,
-      "occlusion_mass_in_box": 0.08470272433652727
-    }
-  ],
-  "hits": [
-    {
-      "image_id": "9bb667aeb287bfda",
-      "true": "striped_skunk",
-      "pred": "striped_skunk",
-      "conf": 0.5156474709510803,
-      "top3": [
-        [
-          "striped_skunk",
-          0.516
-        ],
-        [
-          "red_fox",
-          0.124
-        ],
-        [
-          "grey_fox",
-          0.084
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        48,
-        30
-      ],
-      "mass_in_box": 0.15395468473434448,
-      "box_area": 0.0205078125,
-      "peak_in_box": false,
-      "occlusion_mass_in_box": 0.058830054209915376
-    },
-    {
-      "image_id": "34ea758a70057444",
-      "true": "american_black_bear",
-      "pred": "american_black_bear",
-      "conf": 0.4795459508895874,
-      "top3": [
-        [
-          "american_black_bear",
-          0.48
-        ],
-        [
-          "domestic_cat",
-          0.099
-        ],
-        [
-          "striped_skunk",
-          0.08
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        47,
-        42
-      ],
-      "mass_in_box": 0.19454635679721832,
-      "box_area": 0.028194754464285713,
-      "peak_in_box": true,
-      "occlusion_mass_in_box": 0.11995588171356983
-    },
-    {
-      "image_id": "c6ad10013fdd1d54",
-      "true": "horse",
-      "pred": "horse",
-      "conf": 0.4602813720703125,
-      "top3": [
-        [
-          "horse",
-          0.46
-        ],
-        [
-          "woodchuck",
-          0.209
-        ],
-        [
-          "white_tailed_deer",
-          0.175
+          "american_crow",
+          0.149
         ]
       ],
       "night": false,
       "n_animal_boxes": 1,
       "animal_px_wxh": [
-        52,
-        123
+        71,
+        48
       ],
-      "mass_in_box": 0.5699649453163147,
-      "box_area": 0.08922991071428571,
-      "peak_in_box": true,
-      "occlusion_mass_in_box": 0.0891646293427678
-    },
+      "mass_in_box": 0.0003276205970905721,
+      "box_area": 0.047544642857142855,
+      "peak_in_box": false,
+      "occlusion_mass_in_box": 0.01925887638881527
+    }
+  ],
+  "hits": [
     {
-      "image_id": "a13c8dc0bb7f341d",
-      "true": "virginia_opossum",
-      "pred": "virginia_opossum",
-      "conf": 0.7788134813308716,
+      "image_id": "e3f20c7a70cc79bc",
+      "true": "dog",
+      "pred": "dog",
+      "conf": 0.2127339392900467,
       "top3": [
         [
-          "virginia_opossum",
-          0.779
+          "dog",
+          0.213
         ],
         [
+          "coyote",
+          0.163
+        ],
+        [
+          "american_crow",
+          0.085
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        51,
+        41
+      ],
+      "mass_in_box": 0.2626749277114868,
+      "box_area": 0.03046875,
+      "peak_in_box": true,
+      "occlusion_mass_in_box": 0.5327365457777252
+    },
+    {
+      "image_id": "b3e5099cec7ec40e",
+      "true": "striped_skunk",
+      "pred": "striped_skunk",
+      "conf": 0.8069723844528198,
+      "top3": [
+        [
           "striped_skunk",
-          0.073
+          0.807
+        ],
+        [
+          "virginia_opossum",
+          0.045
         ],
         [
           "woodchuck",
-          0.052
+          0.037
         ]
       ],
       "night": true,
       "n_animal_boxes": 1,
       "animal_px_wxh": [
-        88,
-        56
+        55,
+        30
       ],
-      "mass_in_box": 0.013836491852998734,
-      "box_area": 0.07156808035714286,
+      "mass_in_box": 0.20056788623332977,
+      "box_area": 0.02421875,
       "peak_in_box": false,
-      "occlusion_mass_in_box": 0.010163566527949463
+      "occlusion_mass_in_box": 0.10124451743354647
+    },
+    {
+      "image_id": "751115edd2999c3e",
+      "true": "bird",
+      "pred": "bird",
+      "conf": 0.27789050340652466,
+      "top3": [
+        [
+          "bird",
+          0.278
+        ],
+        [
+          "eastern_gray_squirrel",
+          0.16
+        ],
+        [
+          "dog",
+          0.146
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        53,
+        34
+      ],
+      "mass_in_box": 0.19323696196079254,
+      "box_area": 0.0263671875,
+      "peak_in_box": false,
+      "occlusion_mass_in_box": 0.14555695013530612
     },
     {
       "image_id": "8a42e0eb8dcf4ee8",
       "true": "domestic_cat",
       "pred": "domestic_cat",
-      "conf": 0.7209146618843079,
+      "conf": 0.4252961575984955,
       "top3": [
         [
           "domestic_cat",
-          0.721
+          0.425
         ],
         [
           "bird",
-          0.044
+          0.177
         ],
         [
-          "eastern_fox_squirrel",
-          0.032
+          "eastern_gray_squirrel",
+          0.069
         ]
       ],
       "night": false,
@@ -299,204 +269,292 @@
         98,
         38
       ],
-      "mass_in_box": 0.010307574644684792,
+      "mass_in_box": 0.0004589910386130214,
       "box_area": 0.052483258928571426,
       "peak_in_box": false,
-      "occlusion_mass_in_box": 0.017283536647629133
-    }
-  ],
-  "candidates": [
-    {
-      "image_id": "4f810d7c5c7c8985",
-      "true": "striped_skunk",
-      "pred": "american_black_bear",
-      "conf": 0.9573408365249634,
-      "top3": [
-        [
-          "american_black_bear",
-          0.957
-        ],
-        [
-          "striped_skunk",
-          0.038
-        ],
-        [
-          "woodchuck",
-          0.001
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        111,
-        79
-      ],
-      "mass_in_box": 0.45921075344085693,
-      "box_area": 0.125,
-      "peak_in_box": true
+      "occlusion_mass_in_box": 0.0
     },
     {
-      "image_id": "b4ba3ffd9b742f4f",
-      "true": "bird",
+      "image_id": "1f99a664458a9813",
+      "true": "chicken",
       "pred": "chicken",
-      "conf": 0.9510029554367065,
+      "conf": 0.5037234425544739,
       "top3": [
         [
           "chicken",
-          0.951
+          0.504
         ],
         [
-          "bird",
-          0.037
-        ],
-        [
-          "domestic_cat",
-          0.003
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        26,
-        48
-      ],
-      "mass_in_box": 0.05234791338443756,
-      "box_area": 0.019140625,
-      "peak_in_box": false
-    },
-    {
-      "image_id": "ece8e099eb242e5d",
-      "true": "dog",
-      "pred": "chicken",
-      "conf": 0.9395207762718201,
-      "top3": [
-        [
-          "chicken",
-          0.94
-        ],
-        [
-          "eastern_gray_squirrel",
-          0.023
-        ],
-        [
-          "eastern_chipmunk",
-          0.008
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        42,
-        48
-      ],
-      "mass_in_box": 0.01873396895825863,
-      "box_area": 0.02939453125,
-      "peak_in_box": false
-    },
-    {
-      "image_id": "05a44977de91004a",
-      "true": "striped_skunk",
-      "pred": "american_black_bear",
-      "conf": 0.938069760799408,
-      "top3": [
-        [
-          "american_black_bear",
-          0.938
-        ],
-        [
-          "striped_skunk",
-          0.04
+          "bobcat",
+          0.115
         ],
         [
           "woodchuck",
-          0.008
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        111,
-        78
-      ],
-      "mass_in_box": 0.4201489984989166,
-      "box_area": 0.12388392857142858,
-      "peak_in_box": true
-    },
-    {
-      "image_id": "ab90cd8b7fcf32a1",
-      "true": "striped_skunk",
-      "pred": "american_black_bear",
-      "conf": 0.935905933380127,
-      "top3": [
-        [
-          "american_black_bear",
-          0.936
-        ],
-        [
-          "striped_skunk",
-          0.046
-        ],
-        [
-          "woodchuck",
-          0.004
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        87,
-        73
-      ],
-      "mass_in_box": 0.35851120948791504,
-      "box_area": 0.09188058035714286,
-      "peak_in_box": true
-    },
-    {
-      "image_id": "234c7882aa466ea1",
-      "true": "eastern_fox_squirrel",
-      "pred": "american_black_bear",
-      "conf": 0.9293648600578308,
-      "top3": [
-        [
-          "american_black_bear",
-          0.929
-        ],
-        [
-          "woodchuck",
-          0.022
-        ],
-        [
-          "american_crow",
-          0.019
+          0.095
         ]
       ],
       "night": false,
       "n_animal_boxes": 1,
       "animal_px_wxh": [
-        75,
-        125
+        39,
+        45
       ],
-      "mass_in_box": 0.4989151060581207,
-      "box_area": 0.1353515625,
+      "mass_in_box": 0.0065075671300292015,
+      "box_area": 0.025111607142857144,
+      "peak_in_box": false,
+      "occlusion_mass_in_box": 0.017980005152371827
+    }
+  ],
+  "candidates": [
+    {
+      "image_id": "1401911af38e91a0",
+      "true": "chicken",
+      "pred": "eastern_gray_squirrel",
+      "conf": 0.9789658784866333,
+      "top3": [
+        [
+          "eastern_gray_squirrel",
+          0.979
+        ],
+        [
+          "chicken",
+          0.014
+        ],
+        [
+          "bird",
+          0.003
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        38,
+        91
+      ],
+      "mass_in_box": 0.011332518421113491,
+      "box_area": 0.050055803571428574,
+      "peak_in_box": false
+    },
+    {
+      "image_id": "d9bd4b2d559fa96e",
+      "true": "chicken",
+      "pred": "eastern_gray_squirrel",
+      "conf": 0.9761310815811157,
+      "top3": [
+        [
+          "eastern_gray_squirrel",
+          0.976
+        ],
+        [
+          "chicken",
+          0.017
+        ],
+        [
+          "bird",
+          0.003
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        50,
+        98
+      ],
+      "mass_in_box": 0.016398729756474495,
+      "box_area": 0.0697265625,
+      "peak_in_box": false
+    },
+    {
+      "image_id": "e19f2bd6b7a7f3fd",
+      "true": "chicken",
+      "pred": "eastern_gray_squirrel",
+      "conf": 0.9724743962287903,
+      "top3": [
+        [
+          "eastern_gray_squirrel",
+          0.972
+        ],
+        [
+          "chicken",
+          0.022
+        ],
+        [
+          "bird",
+          0.002
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        45,
+        95
+      ],
+      "mass_in_box": 0.012632336467504501,
+      "box_area": 0.05964006696428571,
+      "peak_in_box": false
+    },
+    {
+      "image_id": "be25dd18dcc694af",
+      "true": "striped_skunk",
+      "pred": "american_black_bear",
+      "conf": 0.9721102714538574,
+      "top3": [
+        [
+          "american_black_bear",
+          0.972
+        ],
+        [
+          "striped_skunk",
+          0.014
+        ],
+        [
+          "woodchuck",
+          0.007
+        ]
+      ],
+      "night": true,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        126,
+        73
+      ],
+      "mass_in_box": 0.28994885087013245,
+      "box_area": 0.13111049107142858,
       "peak_in_box": true
+    },
+    {
+      "image_id": "94ce8eeda3de5a03",
+      "true": "chicken",
+      "pred": "bird",
+      "conf": 0.9712113738059998,
+      "top3": [
+        [
+          "bird",
+          0.971
+        ],
+        [
+          "chicken",
+          0.019
+        ],
+        [
+          "eastern_gray_squirrel",
+          0.004
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        31,
+        54
+      ],
+      "mass_in_box": 0.048425737768411636,
+      "box_area": 0.024553571428571428,
+      "peak_in_box": true
+    },
+    {
+      "image_id": "c6660a8c2a1ace3b",
+      "true": "chicken",
+      "pred": "eastern_gray_squirrel",
+      "conf": 0.969692587852478,
+      "top3": [
+        [
+          "eastern_gray_squirrel",
+          0.97
+        ],
+        [
+          "chicken",
+          0.027
+        ],
+        [
+          "eastern_fox_squirrel",
+          0.001
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        67,
+        99
+      ],
+      "mass_in_box": 0.018405182287096977,
+      "box_area": 0.09391741071428572,
+      "peak_in_box": false
+    },
+    {
+      "image_id": "c87a856747ee2d99",
+      "true": "chicken",
+      "pred": "bird",
+      "conf": 0.967284083366394,
+      "top3": [
+        [
+          "bird",
+          0.967
+        ],
+        [
+          "chicken",
+          0.019
+        ],
+        [
+          "eastern_gray_squirrel",
+          0.006
+        ]
+      ],
+      "night": false,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        39,
+        59
+      ],
+      "mass_in_box": 0.05671153962612152,
+      "box_area": 0.032101004464285716,
+      "peak_in_box": false
+    },
+    {
+      "image_id": "cb6f2c1ac1913d31",
+      "true": "eastern_cottontail",
+      "pred": "domestic_cat",
+      "conf": 0.9464635848999023,
+      "top3": [
+        [
+          "domestic_cat",
+          0.946
+        ],
+        [
+          "virginia_opossum",
+          0.024
+        ],
+        [
+          "eastern_cottontail",
+          0.013
+        ]
+      ],
+      "night": true,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        17,
+        15
+      ],
+      "mass_in_box": 0.010754856280982494,
+      "box_area": 0.0040178571428571425,
+      "peak_in_box": false
     },
     {
       "image_id": "1b02e7773128f1f3",
       "true": "striped_skunk",
       "pred": "american_black_bear",
-      "conf": 0.9163632988929749,
+      "conf": 0.9445618987083435,
       "top3": [
         [
           "american_black_bear",
-          0.916
+          0.945
         ],
         [
           "striped_skunk",
-          0.044
+          0.037
         ],
         [
           "woodchuck",
-          0.02
+          0.007
         ]
       ],
       "night": true,
@@ -505,153 +563,95 @@
         104,
         60
       ],
-      "mass_in_box": 0.2442808300256729,
+      "mass_in_box": 0.21572676301002502,
       "box_area": 0.08850446428571429,
-      "peak_in_box": true
-    },
-    {
-      "image_id": "c58f1fa1c43a36c3",
-      "true": "bird",
-      "pred": "chicken",
-      "conf": 0.9138251543045044,
-      "top3": [
-        [
-          "chicken",
-          0.914
-        ],
-        [
-          "bird",
-          0.056
-        ],
-        [
-          "domestic_cat",
-          0.011
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        28,
-        38
-      ],
-      "mass_in_box": 0.03436104208230972,
-      "box_area": 0.016183035714285716,
       "peak_in_box": false
     },
     {
-      "image_id": "6cf157171b7364e5",
-      "true": "bird",
-      "pred": "chicken",
-      "conf": 0.9126650094985962,
-      "top3": [
-        [
-          "chicken",
-          0.913
-        ],
-        [
-          "bird",
-          0.053
-        ],
-        [
-          "woodchuck",
-          0.009
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        46,
-        43
-      ],
-      "mass_in_box": 0.06253048032522202,
-      "box_area": 0.02885044642857143,
-      "peak_in_box": true
-    },
-    {
-      "image_id": "900a2cdbdced751f",
-      "true": "striped_skunk",
-      "pred": "american_black_bear",
-      "conf": 0.8960989117622375,
-      "top3": [
-        [
-          "american_black_bear",
-          0.896
-        ],
-        [
-          "striped_skunk",
-          0.079
-        ],
-        [
-          "domestic_cat",
-          0.007
-        ]
-      ],
-      "night": true,
-      "n_animal_boxes": 1,
-      "animal_px_wxh": [
-        76,
-        67
-      ],
-      "mass_in_box": 0.28500646352767944,
-      "box_area": 0.073046875,
-      "peak_in_box": true
-    },
-    {
-      "image_id": "2fab6132f8ad9aad",
+      "image_id": "ac4ccfea3d91446e",
       "true": "eastern_cottontail",
       "pred": "domestic_cat",
-      "conf": 0.8572935461997986,
+      "conf": 0.9444407820701599,
       "top3": [
         [
           "domestic_cat",
-          0.857
+          0.944
         ],
         [
           "virginia_opossum",
-          0.038
+          0.029
         ],
         [
           "eastern_cottontail",
-          0.016
+          0.006
         ]
       ],
       "night": true,
       "n_animal_boxes": 1,
       "animal_px_wxh": [
-        25,
-        21
+        27,
+        20
       ],
-      "mass_in_box": 0.021632971242070198,
-      "box_area": 0.007672991071428571,
+      "mass_in_box": 0.0076759690418839455,
+      "box_area": 0.008203125,
       "peak_in_box": false
     },
     {
-      "image_id": "e205ab7f0bb24311",
+      "image_id": "92d12c89172afe1b",
       "true": "eastern_cottontail",
       "pred": "domestic_cat",
-      "conf": 0.8549038171768188,
+      "conf": 0.9432942271232605,
       "top3": [
         [
           "domestic_cat",
-          0.855
+          0.943
         ],
         [
           "virginia_opossum",
-          0.033
+          0.027
         ],
         [
           "eastern_cottontail",
-          0.02
+          0.01
         ]
       ],
       "night": true,
       "n_animal_boxes": 1,
       "animal_px_wxh": [
-        24,
-        23
+        34,
+        16
       ],
-      "mass_in_box": 0.023716848343610764,
-      "box_area": 0.008342633928571428,
+      "mass_in_box": 0.005543486215174198,
+      "box_area": 0.008537946428571428,
+      "peak_in_box": false
+    },
+    {
+      "image_id": "396a6ba640900ef8",
+      "true": "eastern_cottontail",
+      "pred": "domestic_cat",
+      "conf": 0.943062424659729,
+      "top3": [
+        [
+          "domestic_cat",
+          0.943
+        ],
+        [
+          "virginia_opossum",
+          0.028
+        ],
+        [
+          "eastern_cottontail",
+          0.012
+        ]
+      ],
+      "night": true,
+      "n_animal_boxes": 1,
+      "animal_px_wxh": [
+        31,
+        19
+      ],
+      "mass_in_box": 0.006896521896123886,
+      "box_area": 0.008928571428571428,
       "peak_in_box": false
     }
   ]

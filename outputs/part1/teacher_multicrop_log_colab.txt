@@ -1,0 +1,6 @@
+embeddings a calcular: nenhum
+seleção nos 105 rótulos (F1 leave-one-out): {'center': 0.65, 'media': 0.734, 'max_conf': 0.762} -> max_conf
+orçamento 1: center F1 0.671 (borda 0.34) | media F1 0.710 (borda 0.53) | max_conf F1 0.719 (borda 0.65)
+orçamento 5: center F1 0.682 (borda 0.26) | media F1 0.789 (borda 0.66) | max_conf F1 0.788 (borda 0.68)
+orçamento 20: center F1 0.738 (borda 0.32) | media F1 0.829 (borda 0.68) | max_conf F1 0.854 (borda 0.77)
+professor multi-crop (orçamento 5, max_conf): F1 0.788 | acurácia 0.792

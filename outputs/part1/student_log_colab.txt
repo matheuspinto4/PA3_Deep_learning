@@ -4,8 +4,31 @@ soft_improved: já treinado, lendo soft_improved_b5_s0.json
 soft_improved_tau30: já treinado, lendo soft_improved_tau30_b5_s0.json
 soft_improved_tau50: já treinado, lendo soft_improved_tau50_b5_s0.json
 soft_improved_tau70: já treinado, lendo soft_improved_tau70_b5_s0.json
+soft_improved_mc: já treinado, lendo soft_improved_mc_b5_s0.json
+soft_improved_mc_tau50: já treinado, lendo soft_improved_mc_tau50_b5_s0.json
+[aluno soft_improved_mc_tau70 b5 s0] retomando do checkpoint da época 4
+[aluno soft_improved_mc_tau70 b5 s0] ep   5 | loss 0.493 | val loss 1.217 F1 0.679 acc 0.673 | 27s
+[aluno soft_improved_mc_tau70 b5 s0] ep   6 | loss 0.469 | val loss 1.183 F1 0.655 acc 0.653 | 30s
+[aluno soft_improved_mc_tau70 b5 s0] ep   7 | loss 0.441 | val loss 1.219 F1 0.669 acc 0.693 | 30s
+[aluno soft_improved_mc_tau70 b5 s0] ep   8 | loss 0.429 | val loss 1.248 F1 0.629 acc 0.634 | 29s
+[aluno soft_improved_mc_tau70 b5 s0] ep   9 | loss 0.412 | val loss 1.194 F1 0.655 acc 0.663 | 29s
+[aluno soft_improved_mc_tau70 b5 s0] ep  10 | loss 0.402 | val loss 1.217 F1 0.646 acc 0.653 | 28s
+[aluno soft_improved_mc_tau70 b5 s0] ep  11 | loss 0.393 | val loss 1.232 F1 0.649 acc 0.658 | 28s
+[aluno soft_improved_mc_tau70 b5 s0] ep  12 | loss 0.393 | val loss 1.218 F1 0.644 acc 0.653 | 28s
+[aluno soft_improved_mc_tau90 b5 s0] ep   1 | loss 1.492 | val loss 1.860 F1 0.433 acc 0.465 | 23s
+[aluno soft_improved_mc_tau90 b5 s0] ep   2 | loss 0.563 | val loss 1.603 F1 0.556 acc 0.564 | 21s
+[aluno soft_improved_mc_tau90 b5 s0] ep   3 | loss 0.370 | val loss 1.854 F1 0.590 acc 0.604 | 23s
+[aluno soft_improved_mc_tau90 b5 s0] ep   4 | loss 0.331 | val loss 1.595 F1 0.602 acc 0.609 | 25s
+[aluno soft_improved_mc_tau90 b5 s0] ep   5 | loss 0.273 | val loss 1.545 F1 0.602 acc 0.609 | 24s
+[aluno soft_improved_mc_tau90 b5 s0] ep   6 | loss 0.241 | val loss 1.312 F1 0.639 acc 0.644 | 24s
+[aluno soft_improved_mc_tau90 b5 s0] ep   7 | loss 0.214 | val loss 1.381 F1 0.639 acc 0.644 | 25s
+[aluno soft_improved_mc_tau90 b5 s0] ep   8 | loss 0.206 | val loss 1.281 F1 0.657 acc 0.668 | 24s
+[aluno soft_improved_mc_tau90 b5 s0] ep   9 | loss 0.198 | val loss 1.269 F1 0.651 acc 0.658 | 24s
+[aluno soft_improved_mc_tau90 b5 s0] ep  10 | loss 0.195 | val loss 1.268 F1 0.650 acc 0.658 | 25s
+[aluno soft_improved_mc_tau90 b5 s0] ep  11 | loss 0.195 | val loss 1.269 F1 0.641 acc 0.649 | 23s
+[aluno soft_improved_mc_tau90 b5 s0] ep  12 | loss 0.190 | val loss 1.266 F1 0.657 acc 0.663 | 25s
 
-aluno escolhido pelo val: soft_improved_tau70
+aluno escolhido pelo val: soft_improved_mc_tau70
 
 | variante | imagens de treino | melhor época | F1 val | F1 test | acurácia test |
 |---|---|---|---|---|---|
@@ -14,7 +37,11 @@ aluno escolhido pelo val: soft_improved_tau70
 | soft_improved | 6505 | 7 | 0.603 | 0.616 | 0.656 |
 | soft_improved_tau30 | 5640 | 11 | 0.612 | 0.629 | 0.673 |
 | soft_improved_tau50 | 4483 | 8 | 0.670 | 0.623 | 0.647 |
-| soft_improved_tau70 (escolhido) | 3745 | 8 | 0.677 | 0.683 | 0.736 |
+| soft_improved_tau70 | 3745 | 8 | 0.677 | 0.683 | 0.736 |
+| soft_improved_mc | 6505 | 9 | 0.652 | 0.641 | 0.697 |
+| soft_improved_mc_tau50 | 5886 | 12 | 0.654 | 0.604 | 0.658 |
+| soft_improved_mc_tau70 (escolhido) | 5113 | 5 | 0.679 | 0.620 | 0.658 |
+| soft_improved_mc_tau90 | 3764 | 8 | 0.657 | 0.657 | 0.716 |
 
-referências: piso 0.460 | professor zs 0.649 | professor melhorado 0.682 | teto 0.686
-aluno - professor por classe: {'dog': 0.402, 'chicken': 0.3, 'virginia_opossum': 0.237, 'woodchuck': 0.23, 'white_tailed_deer': 0.18, 'eastern_chipmunk': 0.172, 'coyote': 0.099, 'american_crow': 0.053, 'northern_raccoon': 0.036, 'eastern_fox_squirrel': 0.033, 'horse': 0.032, 'wild_turkey': 0.016, 'american_black_bear': -0.011, 'grey_fox': -0.013, 'eastern_gray_squirrel': -0.018, 'domestic_cat': -0.122, 'striped_skunk': -0.128, 'red_fox': -0.148, 'bobcat': -0.229, 'bird': -0.419, 'eastern_cottontail': -0.668}
+referências: piso 0.460 | professor zs 0.649 | professor melhorado 0.682 | professor 3 recortes 0.788 | teto 0.686
+aluno - professor por classe: {'woodchuck': 0.254, 'dog': 0.231, 'eastern_chipmunk': 0.15, 'coyote': 0.129, 'virginia_opossum': 0.035, 'eastern_gray_squirrel': -0.002, 'white_tailed_deer': -0.061, 'american_black_bear': -0.076, 'chicken': -0.093, 'american_crow': -0.179, 'domestic_cat': -0.199, 'northern_raccoon': -0.216, 'grey_fox': -0.247, 'bird': -0.257, 'bobcat': -0.33, 'wild_turkey': -0.333, 'horse': -0.333, 'eastern_fox_squirrel': -0.348, 'red_fox': -0.349, 'striped_skunk': -0.422, 'eastern_cottontail': -0.88}

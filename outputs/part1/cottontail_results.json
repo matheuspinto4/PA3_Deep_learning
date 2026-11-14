@@ -1,30 +1,31 @@
 {
-  "student": "soft_improved_tau70",
+  "student": "soft_improved_mc_tau70",
   "n_test": 26,
   "frac_night": 1.0,
   "student_pred": {
     "domestic_cat": 17,
-    "northern_raccoon": 4,
-    "red_fox": 2,
-    "grey_fox": 2,
-    "eastern_cottontail": 1
+    "bobcat": 5,
+    "northern_raccoon": 4
   },
   "recall": {
     "piso b5": 0.6538461538461539,
     "piso b20": 1.0,
-    "professor melhorado": 0.6538461538461539,
-    "aluno b5": 0.038461538461538464,
-    "aluno b20": 0.15384615384615385
+    "professor do aluno": 0.8461538461538461,
+    "aluno b5": 0.0,
+    "aluno b20": 0.0
   },
   "bioclip_neighbors": {
     "k": 10,
     "seen_by_student": {
-      "eastern_cottontail": 139,
+      "eastern_cottontail": 142,
+      "domestic_cat": 25,
+      "red_fox": 7,
       "virginia_opossum": 6,
+      "northern_raccoon": 5,
       "coyote": 1,
-      "northern_raccoon": 1
+      "grey_fox": 1
     },
-    "frac_target": 0.9455782312925171
+    "frac_target": 0.7593582887700535
   },
   "cameras": {
     "A": {
@@ -34,14 +35,12 @@
       },
       "train_images_same_camera": 23,
       "seen_by_student": {
-        "domestic_cat": 12,
-        "virginia_opossum": 2
+        "domestic_cat": 15,
+        "virginia_opossum": 3
       },
       "filtered_out": {
-        "domestic_cat": 5,
-        "virginia_opossum": 2,
-        "eastern_cottontail": 1,
-        "northern_raccoon": 1
+        "domestic_cat": 3,
+        "virginia_opossum": 2
       },
       "budget_labels": []
     },
@@ -58,27 +57,23 @@
     "C": {
       "n_test_cottontails": 3,
       "student_pred": {
-        "grey_fox": 2,
-        "eastern_cottontail": 1
+        "bobcat": 3
       },
       "train_images_same_camera": 235,
       "seen_by_student": {
-        "grey_fox": 108,
-        "red_fox": 18,
-        "virginia_opossum": 18,
+        "grey_fox": 125,
+        "virginia_opossum": 45,
+        "red_fox": 24,
         "striped_skunk": 14,
         "eastern_cottontail": 8,
-        "bobcat": 1,
-        "northern_raccoon": 1
+        "bobcat": 3
       },
       "filtered_out": {
-        "red_fox": 16,
-        "grey_fox": 13,
-        "northern_raccoon": 13,
-        "virginia_opossum": 12,
-        "coyote": 7,
-        "eastern_cottontail": 4,
-        "dog": 2
+        "grey_fox": 11,
+        "coyote": 2,
+        "virginia_opossum": 1,
+        "striped_skunk": 1,
+        "red_fox": 1
       },
       "budget_labels": [
         "bobcat",
@@ -90,29 +85,29 @@
     "D": {
       "n_test_cottontails": 2,
       "student_pred": {
-        "red_fox": 2
+        "bobcat": 2
       },
       "train_images_same_camera": 330,
       "seen_by_student": {
-        "coyote": 68,
-        "domestic_cat": 48,
-        "grey_fox": 24,
-        "red_fox": 19,
-        "bobcat": 18,
-        "striped_skunk": 16,
-        "northern_raccoon": 2,
+        "coyote": 89,
+        "domestic_cat": 58,
+        "grey_fox": 32,
+        "bobcat": 25,
+        "striped_skunk": 23,
+        "red_fox": 22,
+        "northern_raccoon": 6,
         "virginia_opossum": 1
       },
       "filtered_out": {
-        "coyote": 33,
-        "domestic_cat": 25,
-        "red_fox": 17,
-        "striped_skunk": 16,
-        "northern_raccoon": 15,
-        "grey_fox": 9,
-        "bobcat": 8,
+        "domestic_cat": 19,
+        "northern_raccoon": 9,
+        "coyote": 8,
+        "eastern_cottontail": 8,
+        "red_fox": 7,
+        "grey_fox": 7,
+        "striped_skunk": 6,
         "virginia_opossum": 5,
-        "eastern_cottontail": 5,
+        "bobcat": 4,
         "dog": 1
       },
       "budget_labels": [

@@ -1,6 +1,6 @@
 {
   "md_conf": 0.2,
-  "student": "soft_improved_tau70",
+  "student": "soft_improved_mc_tau70",
   "fraction_below_2pct": 0.3094944512946979,
   "n_no_detection": 35,
   "bins": {
@@ -11,7 +11,8 @@
         "piso (b)": 0.545816733067729,
         "professor zero-shot": 0.5179282868525896,
         "professor melhorado": 0.5976095617529881,
-        "aluno": 0.7250996015936255
+        "professor 3 recortes": 0.7171314741035857,
+        "aluno": 0.601593625498008
       },
       "teacher_zs_pred_woodchuck": 0.2151394422310757,
       "true_woodchuck": 0.04780876494023904
@@ -23,7 +24,8 @@
         "piso (b)": 0.419811320754717,
         "professor zero-shot": 0.6226415094339622,
         "professor melhorado": 0.6745283018867925,
-        "aluno": 0.7547169811320755
+        "professor 3 recortes": 0.8160377358490566,
+        "aluno": 0.6981132075471698
       },
       "teacher_zs_pred_woodchuck": 0.14150943396226415,
       "true_woodchuck": 0.018867924528301886
@@ -35,7 +37,8 @@
         "piso (b)": 0.49333333333333335,
         "professor zero-shot": 0.7422222222222222,
         "professor melhorado": 0.7555555555555555,
-        "aluno": 0.6933333333333334
+        "professor 3 recortes": 0.8755555555555555,
+        "aluno": 0.6666666666666666
       },
       "teacher_zs_pred_woodchuck": 0.12444444444444444,
       "true_woodchuck": 0.02666666666666667
@@ -47,7 +50,8 @@
         "piso (b)": 0.4318181818181818,
         "professor zero-shot": 0.75,
         "professor melhorado": 0.8068181818181818,
-        "aluno": 0.8295454545454546
+        "professor 3 recortes": 0.8636363636363636,
+        "aluno": 0.7840909090909091
       },
       "teacher_zs_pred_woodchuck": 0.11363636363636363,
       "true_woodchuck": 0.0
@@ -59,7 +63,8 @@
         "piso (b)": 0.5142857142857142,
         "professor zero-shot": 0.4,
         "professor melhorado": 0.5142857142857142,
-        "aluno": 0.7428571428571429
+        "professor 3 recortes": 0.45714285714285713,
+        "aluno": 0.45714285714285713
       },
       "teacher_zs_pred_woodchuck": 0.34285714285714286,
       "true_woodchuck": 0.0
@@ -72,7 +77,8 @@
         "piso (b)": 0.4444444444444444,
         "professor zero-shot": 0.21367521367521367,
         "professor melhorado": 0.2564102564102564,
-        "aluno": 0.7094017094017094
+        "professor 3 recortes": 0.6752136752136753,
+        "aluno": 0.6153846153846154
       }
     },
     "animal no centro": {
@@ -81,7 +87,8 @@
         "piso (b)": 0.49013657056145676,
         "professor zero-shot": 0.7132018209408194,
         "professor melhorado": 0.7647951441578149,
-        "aluno": 0.7405159332321699
+        "professor 3 recortes": 0.8300455235204856,
+        "aluno": 0.6767830045523521
       }
     }
   }

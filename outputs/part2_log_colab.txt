@@ -1,21 +1,121 @@
-método da Trilha C: aluno soft_improved_tau70
+método da Trilha C: aluno soft_improved_mc_tau70
 [resnet18_b1_s0] já treinado, recarregando de resnet18_b1_s0.json
-[aluno soft_improved_tau70_b1_s0] já treinado, lendo soft_improved_tau70_b1_s0.json
+[aluno soft_improved_mc_tau70 b1 s0] ep   1 | loss 1.414 | val loss 1.836 F1 0.499 acc 0.520 | 27s
+[aluno soft_improved_mc_tau70 b1 s0] ep   2 | loss 0.703 | val loss 1.894 F1 0.476 acc 0.510 | 27s
+[aluno soft_improved_mc_tau70 b1 s0] ep   3 | loss 0.574 | val loss 1.953 F1 0.465 acc 0.500 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep   4 | loss 0.497 | val loss 1.769 F1 0.486 acc 0.520 | 31s
+[aluno soft_improved_mc_tau70 b1 s0] ep   5 | loss 0.455 | val loss 1.731 F1 0.504 acc 0.505 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep   6 | loss 0.422 | val loss 1.805 F1 0.506 acc 0.520 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep   7 | loss 0.386 | val loss 1.715 F1 0.569 acc 0.579 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep   8 | loss 0.369 | val loss 1.658 F1 0.544 acc 0.554 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep   9 | loss 0.347 | val loss 1.698 F1 0.549 acc 0.564 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep  10 | loss 0.338 | val loss 1.673 F1 0.548 acc 0.564 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep  11 | loss 0.329 | val loss 1.720 F1 0.545 acc 0.559 | 30s
+[aluno soft_improved_mc_tau70 b1 s0] ep  12 | loss 0.325 | val loss 1.698 F1 0.567 acc 0.574 | 30s
 [resnet18_b5_s0] já treinado, recarregando de resnet18_b5_s0.json
-[aluno soft_improved_tau70_b5_s0] já treinado, lendo soft_improved_tau70_b5_s0.json
+[aluno soft_improved_mc_tau70_b5_s0] já treinado, lendo soft_improved_mc_tau70_b5_s0.json
 [resnet18_b5_s1] já treinado, recarregando de resnet18_b5_s1.json
-[aluno soft_improved_tau70_b5_s1] já treinado, lendo soft_improved_tau70_b5_s1.json
+[aluno soft_improved_mc_tau70 b5 s1] ep   1 | loss 1.600 | val loss 1.778 F1 0.424 acc 0.475 | 29s
+[aluno soft_improved_mc_tau70 b5 s1] ep   2 | loss 0.790 | val loss 1.619 F1 0.487 acc 0.515 | 25s
+[aluno soft_improved_mc_tau70 b5 s1] ep   3 | loss 0.626 | val loss 1.419 F1 0.589 acc 0.604 | 29s
+[aluno soft_improved_mc_tau70 b5 s1] ep   4 | loss 0.530 | val loss 1.399 F1 0.568 acc 0.594 | 29s
+[aluno soft_improved_mc_tau70 b5 s1] ep   5 | loss 0.496 | val loss 1.331 F1 0.594 acc 0.604 | 28s
+[aluno soft_improved_mc_tau70 b5 s1] ep   6 | loss 0.475 | val loss 1.262 F1 0.655 acc 0.649 | 28s
+[aluno soft_improved_mc_tau70 b5 s1] ep   7 | loss 0.452 | val loss 1.243 F1 0.648 acc 0.658 | 29s
+[aluno soft_improved_mc_tau70 b5 s1] ep   8 | loss 0.434 | val loss 1.230 F1 0.626 acc 0.649 | 28s
+[aluno soft_improved_mc_tau70 b5 s1] ep   9 | loss 0.411 | val loss 1.273 F1 0.598 acc 0.619 | 28s
+[aluno soft_improved_mc_tau70 b5 s1] ep  10 | loss 0.401 | val loss 1.295 F1 0.632 acc 0.653 | 29s
+[aluno soft_improved_mc_tau70 b5 s1] ep  11 | loss 0.396 | val loss 1.302 F1 0.612 acc 0.639 | 29s
+[aluno soft_improved_mc_tau70 b5 s1] ep  12 | loss 0.391 | val loss 1.284 F1 0.606 acc 0.634 | 29s
 [resnet18_b5_s2] já treinado, recarregando de resnet18_b5_s2.json
-[aluno soft_improved_tau70_b5_s2] já treinado, lendo soft_improved_tau70_b5_s2.json
+[aluno soft_improved_mc_tau70 b5 s2] ep   1 | loss 1.561 | val loss 1.574 F1 0.486 acc 0.530 | 30s
+[aluno soft_improved_mc_tau70 b5 s2] ep   2 | loss 0.764 | val loss 1.490 F1 0.552 acc 0.564 | 26s
+[aluno soft_improved_mc_tau70 b5 s2] ep   3 | loss 0.631 | val loss 1.516 F1 0.531 acc 0.584 | 30s
+[aluno soft_improved_mc_tau70 b5 s2] ep   4 | loss 0.568 | val loss 1.429 F1 0.583 acc 0.594 | 29s
+[aluno soft_improved_mc_tau70 b5 s2] ep   5 | loss 0.511 | val loss 1.264 F1 0.637 acc 0.644 | 30s
+[aluno soft_improved_mc_tau70 b5 s2] ep   6 | loss 0.464 | val loss 1.231 F1 0.651 acc 0.644 | 30s
+[aluno soft_improved_mc_tau70 b5 s2] ep   7 | loss 0.436 | val loss 1.257 F1 0.670 acc 0.673 | 30s
+[aluno soft_improved_mc_tau70 b5 s2] ep   8 | loss 0.423 | val loss 1.251 F1 0.666 acc 0.668 | 29s
+[aluno soft_improved_mc_tau70 b5 s2] ep   9 | loss 0.409 | val loss 1.218 F1 0.646 acc 0.658 | 28s
+[aluno soft_improved_mc_tau70 b5 s2] ep  10 | loss 0.399 | val loss 1.230 F1 0.662 acc 0.663 | 29s
+[aluno soft_improved_mc_tau70 b5 s2] ep  11 | loss 0.392 | val loss 1.211 F1 0.671 acc 0.668 | 29s
+[aluno soft_improved_mc_tau70 b5 s2] ep  12 | loss 0.392 | val loss 1.225 F1 0.664 acc 0.663 | 31s
 [resnet18_b20_s0] já treinado, recarregando de resnet18_b20_s0.json
-[aluno soft_improved_tau70_b20_s0] já treinado, lendo soft_improved_tau70_b20_s0.json
+[aluno soft_improved_mc_tau70 b20 s0] ep   1 | loss 1.679 | val loss 1.818 F1 0.423 acc 0.490 | 32s
+[aluno soft_improved_mc_tau70 b20 s0] ep   2 | loss 0.877 | val loss 1.650 F1 0.476 acc 0.500 | 27s
+[aluno soft_improved_mc_tau70 b20 s0] ep   3 | loss 0.650 | val loss 1.425 F1 0.589 acc 0.584 | 31s
+[aluno soft_improved_mc_tau70 b20 s0] ep   4 | loss 0.519 | val loss 1.500 F1 0.626 acc 0.624 | 31s
+[aluno soft_improved_mc_tau70 b20 s0] ep   5 | loss 0.457 | val loss 1.334 F1 0.656 acc 0.653 | 32s
+[aluno soft_improved_mc_tau70 b20 s0] ep   6 | loss 0.410 | val loss 1.125 F1 0.705 acc 0.703 | 31s
+[aluno soft_improved_mc_tau70 b20 s0] ep   7 | loss 0.384 | val loss 1.202 F1 0.663 acc 0.668 | 31s
+[aluno soft_improved_mc_tau70 b20 s0] ep   8 | loss 0.362 | val loss 1.161 F1 0.710 acc 0.718 | 30s
+[aluno soft_improved_mc_tau70 b20 s0] ep   9 | loss 0.344 | val loss 1.158 F1 0.667 acc 0.678 | 31s
+[aluno soft_improved_mc_tau70 b20 s0] ep  10 | loss 0.327 | val loss 1.191 F1 0.683 acc 0.698 | 30s
+[aluno soft_improved_mc_tau70 b20 s0] ep  11 | loss 0.319 | val loss 1.203 F1 0.705 acc 0.703 | 30s
+[aluno soft_improved_mc_tau70 b20 s0] ep  12 | loss 0.316 | val loss 1.213 F1 0.708 acc 0.703 | 30s
+[resnet18_b20_s1] já treinado, recarregando de resnet18_b20_s1.json
+[aluno soft_improved_mc_tau70 b20 s1] ep   1 | loss 1.677 | val loss 1.646 F1 0.500 acc 0.510 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep   2 | loss 0.867 | val loss 1.552 F1 0.517 acc 0.550 | 27s
+[aluno soft_improved_mc_tau70 b20 s1] ep   3 | loss 0.709 | val loss 1.602 F1 0.499 acc 0.520 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep   4 | loss 0.525 | val loss 1.306 F1 0.626 acc 0.614 | 30s
+[aluno soft_improved_mc_tau70 b20 s1] ep   5 | loss 0.493 | val loss 1.233 F1 0.633 acc 0.634 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep   6 | loss 0.427 | val loss 1.258 F1 0.623 acc 0.629 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep   7 | loss 0.391 | val loss 1.195 F1 0.620 acc 0.634 | 30s
+[aluno soft_improved_mc_tau70 b20 s1] ep   8 | loss 0.359 | val loss 1.244 F1 0.606 acc 0.619 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep   9 | loss 0.346 | val loss 1.219 F1 0.624 acc 0.634 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep  10 | loss 0.335 | val loss 1.214 F1 0.623 acc 0.634 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep  11 | loss 0.325 | val loss 1.206 F1 0.623 acc 0.634 | 31s
+[aluno soft_improved_mc_tau70 b20 s1] ep  12 | loss 0.326 | val loss 1.214 F1 0.628 acc 0.639 | 31s
+[resnet18 b20 s2] ep   1 | loss 2.968 | train F1 0.462 | val loss 2.353 F1 0.361 acc 0.376 | 8s
+[resnet18 b20 s2] ep   2 | loss 2.007 | train F1 0.656 | val loss 1.947 F1 0.397 acc 0.416 | 5s
+[resnet18 b20 s2] ep   3 | loss 1.410 | train F1 0.782 | val loss 1.683 F1 0.455 acc 0.490 | 6s
+[resnet18 b20 s2] ep   4 | loss 1.002 | train F1 0.876 | val loss 1.567 F1 0.500 acc 0.525 | 5s
+[resnet18 b20 s2] ep   5 | loss 0.802 | train F1 0.923 | val loss 1.476 F1 0.531 acc 0.545 | 6s
+[resnet18 b20 s2] ep   6 | loss 0.565 | train F1 0.932 | val loss 1.594 F1 0.538 acc 0.545 | 4s
+[resnet18 b20 s2] ep   7 | loss 0.389 | train F1 0.962 | val loss 1.511 F1 0.551 acc 0.564 | 4s
+[resnet18 b20 s2] ep   8 | loss 0.323 | train F1 0.962 | val loss 1.557 F1 0.519 acc 0.535 | 6s
+[resnet18 b20 s2] ep   9 | loss 0.270 | train F1 0.979 | val loss 1.510 F1 0.552 acc 0.569 | 4s
+[resnet18 b20 s2] ep  10 | loss 0.185 | train F1 0.988 | val loss 1.430 F1 0.565 acc 0.579 | 4s
+[resnet18 b20 s2] ep  11 | loss 0.144 | train F1 0.979 | val loss 1.440 F1 0.561 acc 0.569 | 6s
+[resnet18 b20 s2] ep  12 | loss 0.161 | train F1 0.981 | val loss 1.428 F1 0.600 acc 0.609 | 4s
+[resnet18 b20 s2] ep  13 | loss 0.138 | train F1 0.988 | val loss 1.365 F1 0.607 acc 0.614 | 4s
+[resnet18 b20 s2] ep  14 | loss 0.080 | train F1 0.988 | val loss 1.497 F1 0.541 acc 0.554 | 5s
+[resnet18 b20 s2] ep  15 | loss 0.093 | train F1 0.990 | val loss 1.541 F1 0.578 acc 0.594 | 4s
+[resnet18 b20 s2] ep  16 | loss 0.087 | train F1 0.990 | val loss 1.530 F1 0.547 acc 0.569 | 4s
+[resnet18 b20 s2] ep  17 | loss 0.066 | train F1 0.993 | val loss 1.469 F1 0.548 acc 0.559 | 5s
+[resnet18 b20 s2] ep  18 | loss 0.065 | train F1 0.995 | val loss 1.492 F1 0.554 acc 0.569 | 4s
+[resnet18 b20 s2] ep  19 | loss 0.049 | train F1 0.993 | val loss 1.502 F1 0.578 acc 0.594 | 5s
+[resnet18 b20 s2] ep  20 | loss 0.045 | train F1 0.995 | val loss 1.540 F1 0.551 acc 0.564 | 5s
+[resnet18 b20 s2] ep  21 | loss 0.046 | train F1 0.993 | val loss 1.589 F1 0.538 acc 0.554 | 4s
+[resnet18 b20 s2] ep  22 | loss 0.053 | train F1 0.993 | val loss 1.491 F1 0.540 acc 0.554 | 5s
+[resnet18 b20 s2] ep  23 | loss 0.040 | train F1 0.995 | val loss 1.511 F1 0.566 acc 0.584 | 4s
+[resnet18 b20 s2] ep  24 | loss 0.045 | train F1 0.995 | val loss 1.513 F1 0.558 acc 0.574 | 4s
+[resnet18 b20 s2] ep  25 | loss 0.041 | train F1 0.998 | val loss 1.461 F1 0.551 acc 0.564 | 5s
+[resnet18 b20 s2] ep  26 | loss 0.033 | train F1 0.998 | val loss 1.507 F1 0.566 acc 0.584 | 4s
+[resnet18 b20 s2] ep  27 | loss 0.033 | train F1 0.998 | val loss 1.475 F1 0.569 acc 0.589 | 4s
+[resnet18 b20 s2] ep  28 | loss 0.034 | train F1 1.000 | val loss 1.520 F1 0.557 acc 0.574 | 6s
+[resnet18 b20 s2] ep  29 | loss 0.040 | train F1 1.000 | val loss 1.450 F1 0.559 acc 0.569 | 4s
+[resnet18 b20 s2] ep  30 | loss 0.056 | train F1 0.998 | val loss 1.482 F1 0.568 acc 0.584 | 4s
+[aluno soft_improved_mc_tau70 b20 s2] ep   1 | loss 1.681 | val loss 1.911 F1 0.466 acc 0.470 | 29s
+[aluno soft_improved_mc_tau70 b20 s2] ep   2 | loss 0.891 | val loss 1.506 F1 0.551 acc 0.569 | 30s
+[aluno soft_improved_mc_tau70 b20 s2] ep   3 | loss 0.646 | val loss 1.370 F1 0.597 acc 0.594 | 33s
+[aluno soft_improved_mc_tau70 b20 s2] ep   4 | loss 0.560 | val loss 1.429 F1 0.561 acc 0.564 | 32s
+[aluno soft_improved_mc_tau70 b20 s2] ep   5 | loss 0.484 | val loss 1.180 F1 0.687 acc 0.678 | 31s
+[aluno soft_improved_mc_tau70 b20 s2] ep   6 | loss 0.409 | val loss 1.087 F1 0.733 acc 0.738 | 31s
+[aluno soft_improved_mc_tau70 b20 s2] ep   7 | loss 0.391 | val loss 1.157 F1 0.688 acc 0.693 | 31s
+[aluno soft_improved_mc_tau70 b20 s2] ep   8 | loss 0.363 | val loss 1.197 F1 0.668 acc 0.673 | 30s
+[aluno soft_improved_mc_tau70 b20 s2] ep   9 | loss 0.352 | val loss 1.158 F1 0.682 acc 0.683 | 30s
+[aluno soft_improved_mc_tau70 b20 s2] ep  10 | loss 0.335 | val loss 1.181 F1 0.654 acc 0.658 | 30s
+[aluno soft_improved_mc_tau70 b20 s2] ep  11 | loss 0.326 | val loss 1.163 F1 0.653 acc 0.658 | 30s
+[aluno soft_improved_mc_tau70 b20 s2] ep  12 | loss 0.319 | val loss 1.163 F1 0.656 acc 0.658 | 30s
 
-| método | 1/classe | 5/classe (3 seeds) | 20/classe |
+| método | 1/classe | 5/classe (3 seeds) | 20/classe (3 seeds) |
 |---|---|---|---|
-| piso | 0.248 | 0.465 ± 0.006 | 0.649 |
-| aluno (soft_improved_tau70) | 0.585 | 0.668 ± 0.020 | 0.632 |
+| piso | 0.248 | 0.465 ± 0.006 | 0.637 ± 0.014 |
+| aluno (soft_improved_mc_tau70) | 0.606 | 0.655 ± 0.032 | 0.668 ± 0.021 |
+| professor 3 recortes | 0.719 | 0.788 | 0.854 |
 | professor melhorado | 0.671 | 0.682 | 0.738 |
 | professor zero-shot | 0.649 | 0.649 | 0.649 |
 | teto | | 0.686 | |
 
-ganho por classe (b5): {'wild_turkey': 0.5473, 'american_crow': 0.4334, 'horse': 0.3556, 'northern_raccoon': 0.3435, 'woodchuck': 0.3369, 'grey_fox': 0.3095, 'white_tailed_deer': 0.3092, 'red_fox': 0.3064, 'chicken': 0.2949, 'bobcat': 0.2459, 'eastern_fox_squirrel': 0.2433, 'american_black_bear': 0.2396, 'coyote': 0.197, 'virginia_opossum': 0.1765, 'domestic_cat': 0.1705, 'striped_skunk': 0.1308, 'dog': 0.0503, 'eastern_gray_squirrel': 0.006, 'eastern_chipmunk': 0.0053, 'bird': -0.0294, 'eastern_cottontail': -0.4037}
+ganho por classe (b5): {'american_crow': 0.446, 'wild_turkey': 0.3679, 'northern_raccoon': 0.3397, 'coyote': 0.337, 'woodchuck': 0.3137, 'grey_fox': 0.2934, 'white_tailed_deer': 0.28, 'red_fox': 0.2737, 'american_black_bear': 0.2722, 'horse': 0.2339, 'chicken': 0.2246, 'bobcat': 0.2183, 'domestic_cat': 0.1976, 'striped_skunk': 0.1699, 'virginia_opossum': 0.156, 'eastern_fox_squirrel': 0.1483, 'bird': 0.1303, 'dog': 0.0892, 'eastern_chipmunk': 0.0053, 'eastern_gray_squirrel': -0.131, 'eastern_cottontail': -0.3592}

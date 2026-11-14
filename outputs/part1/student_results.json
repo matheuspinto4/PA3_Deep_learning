@@ -1,5 +1,5 @@
 {
-  "chosen": "soft_improved_tau70",
+  "chosen": "soft_improved_mc_tau70",
   "variants": {
     "hard_zs": {
       "n_train": 6505,
@@ -42,53 +42,81 @@
       "best_val_f1": 0.6770007402305539,
       "test_f1_macro": 0.6831867085203784,
       "test_accuracy": 0.7361282367447596
+    },
+    "soft_improved_mc": {
+      "n_train": 6505,
+      "best_epoch": 9,
+      "best_val_f1": 0.6524772231730782,
+      "test_f1_macro": 0.6406358536053995,
+      "test_accuracy": 0.6966707768187423
+    },
+    "soft_improved_mc_tau50": {
+      "n_train": 5886,
+      "best_epoch": 12,
+      "best_val_f1": 0.6537590981720233,
+      "test_f1_macro": 0.6040040475823272,
+      "test_accuracy": 0.6584463625154131
+    },
+    "soft_improved_mc_tau70": {
+      "n_train": 5113,
+      "best_epoch": 5,
+      "best_val_f1": 0.6792504697338517,
+      "test_f1_macro": 0.6200245443054851,
+      "test_accuracy": 0.6584463625154131
+    },
+    "soft_improved_mc_tau90": {
+      "n_train": 3764,
+      "best_epoch": 8,
+      "best_val_f1": 0.6568083446691476,
+      "test_f1_macro": 0.6567830696485054,
+      "test_accuracy": 0.7163995067817509
     }
   },
   "per_class_student_minus_teacher": {
-    "american_black_bear": -0.011015911872705009,
-    "american_crow": 0.05280830280830284,
-    "bird": -0.419047619047619,
-    "bobcat": -0.22938530734632684,
-    "chicken": 0.3002875530603861,
-    "coyote": 0.09870129870129873,
-    "dog": 0.40178815801477974,
-    "domestic_cat": -0.12247891455812243,
-    "eastern_chipmunk": 0.17214611872146124,
-    "eastern_cottontail": -0.6677018633540373,
-    "eastern_fox_squirrel": 0.033205619412515985,
-    "eastern_gray_squirrel": -0.017526777020447915,
-    "grey_fox": -0.013389711064129672,
-    "horse": 0.031746031746031744,
-    "northern_raccoon": 0.03568977350720659,
-    "red_fox": -0.14848484848484855,
-    "striped_skunk": -0.12848551120831053,
-    "virginia_opossum": 0.23746823746823742,
-    "white_tailed_deer": 0.17987982167086636,
-    "wild_turkey": 0.015837104072398134,
-    "woodchuck": 0.2298850574712643
+    "american_black_bear": -0.07617485058010076,
+    "american_crow": -0.17858020142471132,
+    "bird": -0.25661680092059835,
+    "bobcat": -0.3298611111111111,
+    "chicken": -0.09307214524605834,
+    "coyote": 0.1285563751317177,
+    "dog": 0.23080361133458482,
+    "domestic_cat": -0.19893508553302375,
+    "eastern_chipmunk": 0.14976525821596243,
+    "eastern_cottontail": -0.88,
+    "eastern_fox_squirrel": -0.3483516483516484,
+    "eastern_gray_squirrel": -0.002122015915119402,
+    "grey_fox": -0.24747474747474751,
+    "horse": -0.33333333333333337,
+    "northern_raccoon": -0.21610845295055814,
+    "red_fox": -0.34932680538555694,
+    "striped_skunk": -0.4219881500987492,
+    "virginia_opossum": 0.03508771929824561,
+    "white_tailed_deer": -0.061156412157153395,
+    "wild_turkey": -0.33333333333333326,
+    "woodchuck": 0.25407925407925414
   },
   "per_class_student_minus_floor": {
-    "american_black_bear": 0.30307576894223553,
-    "american_crow": 0.4795677136102668,
-    "bird": 0.05714285714285714,
-    "bobcat": 0.2291421856639248,
-    "chicken": 0.36589778380823157,
-    "coyote": 0.32272727272727275,
-    "dog": 0.07341855129465757,
-    "domestic_cat": 0.21085441877521088,
+    "american_black_bear": 0.2872793670115642,
+    "american_crow": 0.3919210607462226,
+    "bird": 0.379746835443038,
+    "bobcat": 0.22672672672672672,
+    "chicken": 0.15251415251415246,
+    "coyote": 0.44580419580419584,
+    "dog": 0.05571943625040976,
+    "domestic_cat": 0.16533027873234057,
     "eastern_chipmunk": 0.015846994535519188,
-    "eastern_cottontail": -0.4516483516483517,
-    "eastern_fox_squirrel": 0.13067150635208713,
-    "eastern_gray_squirrel": -0.005974607916355401,
-    "grey_fox": 0.47751937984496123,
-    "horse": 0.0,
-    "northern_raccoon": 0.4308510638297872,
-    "red_fox": 0.341025641025641,
-    "striped_skunk": 0.20296610169491525,
-    "virginia_opossum": 0.19471639471639468,
-    "white_tailed_deer": 0.25979990159094635,
-    "wild_turkey": 0.6568627450980392,
-    "woodchuck": 0.39024390243902435
+    "eastern_cottontail": -0.5230769230769231,
+    "eastern_fox_squirrel": 0.0020242914979757276,
+    "eastern_gray_squirrel": -0.06963508536993634,
+    "grey_fox": 0.346969696969697,
+    "horse": -0.2222222222222222,
+    "northern_raccoon": 0.34090909090909094,
+    "red_fox": 0.17590936195587353,
+    "striped_skunk": -0.026020408163265285,
+    "virginia_opossum": 0.2194577352472089,
+    "white_tailed_deer": 0.14314632735685373,
+    "wild_turkey": 0.3571428571428572,
+    "woodchuck": 0.492808005003127
   },
   "by_light": {
     "piso (b)": {
@@ -109,28 +137,28 @@
       "dia": {
         "n": 420,
         "n_classes": 16,
-        "accuracy": 0.6214285714285714,
-        "f1_macro": 0.6171508953622556
+        "accuracy": 0.7357142857142858,
+        "f1_macro": 0.7309645661625732
       },
       "noite": {
         "n": 391,
         "n_classes": 15,
-        "accuracy": 0.7442455242966752,
-        "f1_macro": 0.6489188557975862
+        "accuracy": 0.8516624040920716,
+        "f1_macro": 0.7686315354121093
       }
     },
     "aluno": {
       "dia": {
         "n": 420,
         "n_classes": 16,
-        "accuracy": 0.7452380952380953,
-        "f1_macro": 0.6399742261154411
+        "accuracy": 0.6547619047619048,
+        "f1_macro": 0.5753513510160057
       },
       "noite": {
         "n": 391,
         "n_classes": 15,
-        "accuracy": 0.7263427109974424,
-        "f1_macro": 0.6147754798534942
+        "accuracy": 0.6624040920716112,
+        "f1_macro": 0.579658983839969
       }
     }
   }

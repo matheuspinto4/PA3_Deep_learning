@@ -1,17 +1,24 @@
 metodo,orcamento,seed,f1_macro,acuracia
 piso,1,0,0.2483,0.2824
-aluno (soft_improved_tau70),1,0,0.5851,0.6165
+aluno (soft_improved_mc_tau70),1,0,0.6059,0.6461
 piso,5,0,0.4601,0.4846
-aluno (soft_improved_tau70),5,0,0.6832,0.7361
+aluno (soft_improved_mc_tau70),5,0,0.6200,0.6584
 piso,5,1,0.4718,0.5018
-aluno (soft_improved_tau70),5,1,0.6451,0.6819
+aluno (soft_improved_mc_tau70),5,1,0.6640,0.7004
 piso,5,2,0.4621,0.4982
-aluno (soft_improved_tau70),5,2,0.6756,0.7078
+aluno (soft_improved_mc_tau70),5,2,0.6823,0.7300
 piso,20,0,0.6494,0.6769
-aluno (soft_improved_tau70),20,0,0.6325,0.6449
+aluno (soft_improved_mc_tau70),20,0,0.6902,0.7287
+piso,20,1,0.6398,0.6646
+aluno (soft_improved_mc_tau70),20,1,0.6483,0.6979
+piso,20,2,0.6216,0.6572
+aluno (soft_improved_mc_tau70),20,2,0.6654,0.7361
 professor zero-shot,1,-,0.6492,0.6276
 professor melhorado,1,-,0.6711,0.6757
+professor 3 recortes,1,-,0.7190,0.7337
 professor zero-shot,5,-,0.6492,0.6276
 professor melhorado,5,-,0.6817,0.6806
+professor 3 recortes,5,-,0.7880,0.7916
 professor zero-shot,20,-,0.6492,0.6276
 professor melhorado,20,-,0.7378,0.7398
+professor 3 recortes,20,-,0.8536,0.8520
