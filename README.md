@@ -495,8 +495,10 @@ a aumentação, e os rótulos são os mesmos. Números em `curva_orcamento.csv`.
 
 O aluno ganha em 19 das 21 classes. Os maiores ganhos estão nas classes que
 o piso mal reconhecia: american_crow (+0,45), wild_turkey (+0,37), raccoon
-(+0,34), coyote (+0,34), woodchuck (+0,31). As perdas são eastern_cottontail
-(−0,36), o atalho de câmera descrito acima, e eastern_gray_squirrel (−0,13).
+(+0,34), coyote (+0,34), woodchuck (+0,31). eastern_chipmunk não ganhou
+nada (+0,005), porque o piso já acertava 0,96. As perdas são
+eastern_cottontail (−0,36), o atalho de câmera descrito acima, e
+eastern_gray_squirrel (−0,13).
 
 ## Parte 3 — Erros e acertos com mapas de saliência
 
